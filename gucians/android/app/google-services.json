@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "157330251998",
+    "project_id": "gucians-99ca4",
+    "storage_bucket": "gucians-99ca4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:157330251998:android:96f4a49948b2aa52eea24f",
+        "android_client_info": {
+          "package_name": "com.example.gucians"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyADOi4rML6HU5YWwZS3ZsVusupGCo7WNUk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
