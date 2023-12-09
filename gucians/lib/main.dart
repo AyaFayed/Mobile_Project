@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gucians/common/constants.dart';
+import 'package:gucians/screens/news.dart';
 import 'package:gucians/theme/themes.dart';
 
 void main() {
@@ -16,9 +17,10 @@ class MainApp extends StatelessWidget {
       title: appName,
       theme: CustomTheme.lightTheme,
       home: const Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
+        body: news()
+        // Center(
+        //   child: Text('Hello World!'),
+        // ),
       ),
     );
   }

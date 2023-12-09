@@ -6,6 +6,7 @@ class Post {
   List<String> commentIds;
   List<String> tags;
   int votes;
+  String category;
   DateTime createdAt;
 
   Post(
@@ -16,6 +17,7 @@ class Post {
       required this.commentIds,
       required this.tags,
       required this.votes,
+      required this.category,
       required this.createdAt});
 
   Map<String, dynamic> toJson() => {
@@ -26,6 +28,7 @@ class Post {
         'commentIds': commentIds,
         'tags': tags,
         'votes': votes,
+        'category':category,
         'createdAt': createdAt.millisecondsSinceEpoch,
       };
 
@@ -37,6 +40,7 @@ class Post {
         commentIds: (json['commentIds'] as List<dynamic>).cast<String>(),
         tags: (json['tags'] as List<dynamic>).cast<String>(),
         votes: json['votes'],
+        category: json['category'],
         createdAt: DateTime.fromMillisecondsSinceEpoch(json['createdAt']),
       );
 }
