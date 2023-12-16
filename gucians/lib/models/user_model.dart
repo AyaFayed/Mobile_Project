@@ -3,7 +3,7 @@ class UserModel {
   String name;
   String handle;
   String? photoUrl;
-  bool isStaff;
+  String type;
   String? roomLocationId;
   int rating;
   int ratingsCount;
@@ -13,7 +13,7 @@ class UserModel {
     required this.name,
     required this.handle,
     required this.photoUrl,
-    required this.isStaff,
+    required this.type,
     required this.roomLocationId,
     required this.rating,
     required this.ratingsCount,
@@ -24,18 +24,19 @@ class UserModel {
         'name': name,
         'handle': handle,
         'photoUrl': photoUrl,
-        'isStaff': isStaff,
+        'type': type,
         'roomLocationId': roomLocationId,
         'rating': rating,
         'ratingsCount': ratingsCount
       };
 
   static UserModel fromJson(Map<String, dynamic> json) => UserModel(
-      id: json['id'],
+      // id: json['id'],
+      id:'id123',
       name: json['name'],
       handle: json['handle'],
       photoUrl: json['photoUrl'],
-      isStaff: json['isStaff'],
+      type: json['type'],
       roomLocationId: json['roomLocationId'],
       rating: json['rating'],
       ratingsCount: json['ratingsCount']);

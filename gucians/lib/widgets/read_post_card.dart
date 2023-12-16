@@ -1,13 +1,16 @@
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:gucians/models/user_model.dart';
 import 'package:gucians/theme/colors.dart';
-import 'package:gucians/theme/themes.dart';
 
 import '../models/post_model.dart';
 import 'package:flutter/material.dart';
 
 class ReadPostCard extends StatelessWidget {
+  final commentController = TextEditingController();
   final Post post;
+  final UserModel owner;
   // var comments=post.commentIds;
-  const ReadPostCard({super.key, required this.post});
+  ReadPostCard({super.key, required this.post,required this.owner});
 
   void _showComments(BuildContext context) {
     final comments = [1, 2, 3];
@@ -15,62 +18,67 @@ class ReadPostCard extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Comments'),
+          title: const Text('Comments'),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-          content: Container(
-            width: MediaQuery.of(context).size.width * 0.8,
-            height: MediaQuery.of(context).size.height * 0.5,
+          content: Column(
+            children: [
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.8,
+                height: MediaQuery.of(context).size.height * 0.5,
 
-            // Replace this with your list of comments widget
-            child: 
-            ListView.builder(
-              itemCount: comments.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Container(
-                    margin: EdgeInsets.only(top: 5, bottom: 10),
-                    child: ListTile(
-                     contentPadding: EdgeInsets.symmetric(horizontal: 0),
-                    leading:
-                        ClipOval(
-                          child: Image.asset(
-                            'lib/icons/AYB.jpg', // Replace with your image URL
-                            width: 45, // Set the desired width
-                            height: 45, // Set the desired height
-                            fit: BoxFit
-                                .cover, // Adjust the fit of the image within the circle
+                // Replace this with your list of comments widget
+                child: ListView.builder(
+                  itemCount: comments.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Container(
+                        margin: const EdgeInsets.only(top: 5, bottom: 10),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 0),
+                          leading: ClipOval(
+                            child: Image.asset(
+                              'lib/icons/AYB.jpg', // Replace with your image URL
+                              width: 45, // Set the desired width
+                              height: 45, // Set the desired height
+                              fit: BoxFit
+                                  .cover, // Adjust the fit of the image within the circle
+                            ),
                           ),
-                        ),
-                        title:Container(
-                          padding: EdgeInsets.all(5),
-                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(15),color: AppColors.lightGrey, ),
-                          margin: EdgeInsets.only(top: 10),
-                          child: Text(
+                          title: Container(
+                            padding: const EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15),
+                              color: AppColors.lightGrey,
+                            ),
+                            margin: const EdgeInsets.only(top: 10),
+                            child: const Text(
                               "I see this is tooo interesting, i feel that i strongly want to take part and start voluteering to save people",
-                              ),
-                        ),
-                      
-                    ));
-              },
-            ),
-            //  ListView(
-            //   children: [
-            //     ListTile(
-            //       title: Text('Comment 1'),
-            //     ),
-            //     ListTile(
-            //       title: Text('Comment 2'),
-            //     ),
-            //     // Add more comments here
-            //   ],
-            // ),
+                            ),
+                          ),
+                        ));
+                  },
+                ),
+                //  ListView(
+                //   children: [
+                //     ListTile(
+                //       title: Text('Comment 1'),
+                //     ),
+                //     ListTile(
+                //       title: Text('Comment 2'),
+                //     ),
+                //     // Add more comments here
+                //   ],
+                // ),
+              ),
+              TextField(controller: commentController)
+            ],
           ),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Close'),
+              child: const Text('Close'),
             ),
           ],
         );
@@ -84,14 +92,13 @@ class ReadPostCard extends StatelessWidget {
     int days = difference.inDays;
     int hours = difference.inHours;
     int minutes = difference.inMinutes;
-    int seconds = difference.inSeconds;
-    int months = (days ~/ 30) as int;
-    int years = (months ~/ 12) as int;
-    if (years > 0) return years.toString() + "y ago";
-    if (months > 0) return months.toString() + "mo ago";
-    if (days > 0) return days.toString() + "days ago";
-    if (hours > 0) return hours.toString() + "h ago";
-    if (minutes > 0) return minutes.toString() + "52min ago";
+    int months = (days ~/ 30);
+    int years = (months ~/ 12);
+    if (years > 0) return "${years}y ago";
+    if (months > 0) return "${months}mo ago";
+    if (days > 0) return "${days}days ago";
+    if (hours > 0) return "${hours}h ago";
+    if (minutes > 0) return "${minutes}min ago";
     return "few seconds ago";
   }
 
@@ -99,27 +106,58 @@ class ReadPostCard extends StatelessWidget {
     return false;
   }
 
+  Future<String?> getImageURL(String path) async {
+    print('*************************************');
+    print(path);
+    try {
+      print(owner.photoUrl);
+      Reference ref = FirebaseStorage.instance.ref().child(path); // Replace with your image path
+      String x= await ref.getDownloadURL();
+      return x;
+    } catch (e) {
+      print('Error fetching image URL: $e');
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
-        margin: EdgeInsets.all(10),
+        margin: const EdgeInsets.all(10),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         elevation: 4,
         child: Container(
-          margin: EdgeInsets.all(10),
+          margin: const EdgeInsets.all(10),
           child: Column(
             children: [
               Row(children: [
                 Container(
-                  margin: EdgeInsets.only(right: 10),
+                  margin: const EdgeInsets.only(right: 10),
                   child: ClipOval(
-                    child: Image.asset(
-                      'lib/icons/AYB.jpg', // Replace with your image URL
-                      width: 45, // Set the desired width
-                      height: 45, // Set the desired height
-                      fit: BoxFit
-                          .cover, // Adjust the fit of the image within the circle
+                    child: 
+                    FutureBuilder(
+                      future: getImageURL(owner.photoUrl??''), // Fetch the image URL
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return CircularProgressIndicator(); // Display a loading indicator while fetching the image
+                        } else if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        } else if (!snapshot.hasData || snapshot.data == null) {
+                          return Text('No Image');
+                        } else {
+                          print(snapshot.data);
+                          return Image.network(snapshot.data.toString(),height: 45,width: 45,); // Display the image using the retrieved URL
+                        }
+                      },
                     ),
+                    // Image.asset(
+                    //   'lib/icons/AYB.jpg', // Replace with your image URL
+                    //   width: 45, // Set the desired width
+                    //   height: 45, // Set the desired height
+                    //   fit: BoxFit
+                    //       .cover, // Adjust the fit of the image within the circle
+                    // ),
                   ),
                 ),
                 Container(
@@ -128,11 +166,11 @@ class ReadPostCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                          margin: EdgeInsets.only(left: 0),
+                          margin: const EdgeInsets.only(left: 0),
                           // decoration: BoxDecoration(border: Border.all(color: Colors.red)),
                           alignment: Alignment.centerLeft,
                           child: Text(
-                            "AYB Club",
+                            owner.handle??'',
                             style: TextStyle(),
                             textAlign: TextAlign.end,
                             textDirection: TextDirection.ltr,
@@ -141,7 +179,7 @@ class ReadPostCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                Spacer(),
+                const Spacer(),
                 (myOwnPost())
                     ? PopupMenuButton<String>(
                         onSelected: (String result) {
@@ -175,16 +213,32 @@ class ReadPostCard extends StatelessWidget {
                       )
               ]),
               Container(
-                  margin: EdgeInsets.fromLTRB(15, 5, 10, 0),
+                  margin: const EdgeInsets.fromLTRB(15, 5, 10, 0),
                   alignment: Alignment.topLeft,
                   child: Text(
                     post.content,
                     textAlign: TextAlign.start,
                   )),
+                  if(post.file!=null)
               Container(
-                  margin: EdgeInsets.fromLTRB(15, 10, 15, 20),
-                  child: Image.asset('lib/icons/ClubPost.jpg')),
-              Container(
+                  margin: const EdgeInsets.fromLTRB(15, 10, 15, 0),
+                  child: FutureBuilder(
+                      future: getImageURL(post.file??''), // Fetch the image URL
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return CircularProgressIndicator(); // Display a loading indicator while fetching the image
+                        } else if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        } else if (!snapshot.hasData || snapshot.data == null) {
+                          return Text('No Image');
+                        } else {
+                          print(snapshot.data);
+                          return Image.network(snapshot.data.toString()); // Display the image using the retrieved URL
+                        }
+                      },
+                    ),),
+              SizedBox(
                 width: double.infinity, // To take the full width of the card
                 child: Divider(
                   color: AppColors.darkGrey, // Color of the line
@@ -196,15 +250,15 @@ class ReadPostCard extends StatelessWidget {
                   children: [
                     IconButton(
                       onPressed: () {},
-                      icon: Icon(Icons.thumb_up_outlined),
+                      icon: const Icon(Icons.thumb_up_outlined),
                       color: AppColors.darkGrey,
                     ),
                     Text(post.votes.toString()),
                     IconButton(
                         onPressed: () {},
-                        icon: Icon(Icons.thumb_down_outlined),
+                        icon: const Icon(Icons.thumb_down_outlined),
                         color: AppColors.darkGrey),
-                    Spacer(),
+                    const Spacer(),
                     InkWell(
                       onTap: () {
                         _showComments(context);
@@ -212,10 +266,10 @@ class ReadPostCard extends StatelessWidget {
                       child: Row(
                         children: [
                           Icon(Icons.chat_outlined, color: AppColors.darkGrey),
-                          SizedBox(
+                          const SizedBox(
                             width: 10,
                           ),
-                          Text("Comment")
+                          const Text("Comment")
                         ],
                       ),
                     )

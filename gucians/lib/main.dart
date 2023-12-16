@@ -1,10 +1,16 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:gucians/common/constants.dart';
-import 'package:gucians/screens/news.dart';
+import 'package:gucians/screens/buttom_taps_controller_screen.dart';
 import 'package:gucians/theme/themes.dart';
-
-void main() {
+import 'firebase_options.dart';
+void main() async{
   WidgetsFlutterBinding.ensureInitialized();
+  //await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: 
+    DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MainApp());
 }
 
@@ -16,12 +22,11 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       title: appName,
       theme: CustomTheme.lightTheme,
-      home: const Scaffold(
-        body: news()
+      home:  ButtomTabsControllerScreen()
         // Center(
         //   child: Text('Hello World!'),
         // ),
-      ),
+      
     );
   }
 }

@@ -7,6 +7,7 @@ class Post {
   List<String> tags;
   int votes;
   String category;
+  bool? approved;
   DateTime createdAt;
 
   Post(
@@ -18,6 +19,7 @@ class Post {
       required this.tags,
       required this.votes,
       required this.category,
+      required this.approved,
       required this.createdAt});
 
   Map<String, dynamic> toJson() => {
@@ -29,11 +31,12 @@ class Post {
         'tags': tags,
         'votes': votes,
         'category':category,
+        'approved':approved,
         'createdAt': createdAt.millisecondsSinceEpoch,
       };
 
-  static Post fromJson(Map<String, dynamic> json) => Post(
-        id: json['id'],
+  static Post fromJson(Map<String, dynamic> json,String docId) => Post(
+        id:docId,
         content: json['content'],
         file: json['file'],
         authorId: json['authorId'],
@@ -41,6 +44,7 @@ class Post {
         tags: (json['tags'] as List<dynamic>).cast<String>(),
         votes: json['votes'],
         category: json['category'],
-        createdAt: DateTime.fromMillisecondsSinceEpoch(json['createdAt']),
+        approved: json['approved']??true,
+        createdAt: json['createdAt'].toDate(),
       );
 }

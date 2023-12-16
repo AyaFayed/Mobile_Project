@@ -15,7 +15,7 @@ class CustomTheme {
             onError: Colors.white,
             background: Colors.white,
             onBackground: Colors.black,
-            surface: Colors.white,
+            surface: AppColors.darkGrey,
             onSurface: Colors.black));
   }
 }
