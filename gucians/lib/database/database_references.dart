@@ -4,14 +4,10 @@ class DatabaseReferences {
   static FirebaseFirestore database = FirebaseFirestore.instance;
   static CollectionReference<Map<String, dynamic>> users =
       database.collection('users');
-  static CollectionReference<Map<String, dynamic>> academicPosts =
-      database.collection('academicPosts');
+  static CollectionReference<Map<String, dynamic>> posts =
+      database.collection('posts');
   static CollectionReference<Map<String, dynamic>> confessions =
       database.collection('confessions');
-  static CollectionReference<Map<String, dynamic>> news =
-      database.collection('news');
-  static CollectionReference<Map<String, dynamic>> lostAndFoundPosts =
-      database.collection('lostAndFoundPosts');
   static CollectionReference<Map<String, dynamic>> emegencyNumbers =
       database.collection('emegencyNumbers');
   static CollectionReference<Map<String, dynamic>> locations =

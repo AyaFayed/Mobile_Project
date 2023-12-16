@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gucians/common/constants.dart';
 import 'package:gucians/screens/authentication_screens/authenticate.dart';
+import 'package:gucians/screens/wrapper.dart';
 import 'package:gucians/theme/themes.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -19,8 +20,6 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: appName,
-        theme: CustomTheme.lightTheme,
-        home: const Authenticate());
+        title: appName, theme: CustomTheme.lightTheme, home: const Wrapper());
   }
 }
