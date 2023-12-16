@@ -28,8 +28,8 @@ class _LoginState extends State<Login> {
     if (_formKey.currentState!.validate()) {
       dynamic result = await _auth.login(
           controllerEmail.text.trim(), controllerPassword.text);
-      if (result == null) {
-        setState(() => error = ErrorMessages.login);
+      if (result != null) {
+        setState(() => error = result);
       }
     }
   }

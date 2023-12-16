@@ -1,4 +1,5 @@
 import "package:firebase_auth/firebase_auth.dart";
+import "package:gucians/common/error_messages.dart";
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -20,9 +21,12 @@ class AuthService {
       UserCredential result = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
       User? user = result.user;
-      return user;
-    } catch (e) {
       return null;
+    } on FirebaseAuthException catch (e) {
+      if (e.code == "user-not-found" || e.code == "wrong-password") {
+        return ErrorMessages.login;
+      }
+      return e.message;
     }
   }
 
