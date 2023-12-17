@@ -1,7 +1,5 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:timezone/data/latest.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
 
 class NotificationService {
   final FlutterLocalNotificationsPlugin notificationsPlugin =
@@ -39,8 +37,8 @@ class NotificationService {
 
       AndroidNotificationDetails androidPlatformChannelSpecifics =
           AndroidNotificationDetails(
-              message.notification?.android?.channelId ?? 'courses',
-              message.notification?.android?.channelId ?? 'courses',
+              message.notification?.android?.channelId ?? 'notifications',
+              message.notification?.android?.channelId ?? 'notifications',
               importance: Importance.high,
               styleInformation: bigTextStyleInformation,
               priority: Priority.high,
@@ -90,48 +88,5 @@ class NotificationService {
       body,
       platformChannelSpecifics,
     );
-  }
-
-  scheduleLocalNotification(
-      String title, String body, DateTime dateTime) async {
-    var androidInitialize =
-        const AndroidInitializationSettings('@mipmap/ic_launcher');
-    var iOSInitialize = const DarwinInitializationSettings();
-    var initializationSettings =
-        InitializationSettings(android: androidInitialize, iOS: iOSInitialize);
-    notificationsPlugin.initialize(
-      initializationSettings,
-      onDidReceiveNotificationResponse: (details) async {},
-    );
-    BigTextStyleInformation bigTextStyleInformation = BigTextStyleInformation(
-      body.toString(),
-      htmlFormatBigText: true,
-      contentTitle: title.toString(),
-      htmlFormatContentTitle: true,
-    );
-
-    AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails('reminders', 'reminders',
-            importance: Importance.high,
-            styleInformation: bigTextStyleInformation,
-            priority: Priority.high,
-            playSound: true);
-
-    NotificationDetails platformChannelSpecifics = NotificationDetails(
-        android: androidPlatformChannelSpecifics,
-        iOS: const DarwinNotificationDetails());
-
-    notificationsPlugin.zonedSchedule(
-        0,
-        title,
-        body,
-        tz.TZDateTime.from(
-          dateTime,
-          tz.local,
-        ),
-        platformChannelSpecifics,
-        androidAllowWhileIdle: true,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime);
   }
 }
