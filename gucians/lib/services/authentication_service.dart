@@ -2,11 +2,13 @@ import "package:firebase_auth/firebase_auth.dart";
 import "package:gucians/common/error_messages.dart";
 import "package:gucians/controllers/user_controller.dart";
 import "package:gucians/database/reads/user_reads.dart";
+import "package:gucians/services/messaging_service.dart";
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final UserController _user = UserController();
   final UserReads _userReads = UserReads();
+  final MessagingService _messaging = MessagingService();
 
   Future signup(
       String email, String password, String name, String handle) async {
@@ -46,6 +48,7 @@ class AuthService {
 
   Future logout() async {
     try {
+      await _messaging.removeToken();
       return await _auth.signOut();
     } catch (e) {
       return null;

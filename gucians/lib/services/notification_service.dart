@@ -5,7 +5,7 @@ class NotificationService {
   final FlutterLocalNotificationsPlugin notificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
-  initInfo(onclick) {
+  initInfo() {
     var androidInitialize =
         const AndroidInitializationSettings('@mipmap/ic_launcher');
     var iOSInitialize = const DarwinInitializationSettings();
@@ -16,7 +16,7 @@ class NotificationService {
       onDidReceiveNotificationResponse: (details) async {
         try {
           if (details.payload != null && details.payload!.isNotEmpty) {
-            onclick();
+            //onclick();
           } else {}
         } catch (e) {
           //print(e);
