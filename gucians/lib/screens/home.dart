@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gucians/screens/settings.dart';
 import 'package:gucians/services/authentication_service.dart';
 import 'package:gucians/services/messaging_service.dart';
 import 'package:gucians/services/notification_service.dart';
@@ -27,9 +28,6 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(),
-        body: AuthBtn(
-            onPressed: () async => await _auth.logout(), text: 'log out'));
+    return const Settings();
   }
 }
