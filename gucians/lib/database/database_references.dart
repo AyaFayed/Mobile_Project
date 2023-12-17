@@ -14,6 +14,8 @@ class DatabaseReferences {
       database.collection('locations');
   static CollectionReference<Map<String, dynamic>> comments =
       database.collection('comments');
+  static CollectionReference<Map<String, dynamic>> notifications =
+      database.collection('notifications');
 
   static Future<Map<String, dynamic>?> getDocumentData(
       CollectionReference<Map<String, dynamic>> docRef, String? docId) async {
