@@ -6,30 +6,27 @@ class UserModel {
   String? photoUrl;
   String type;
   String? roomLocationId;
-  Map<String,double>? ratings;
+  Map<String, double>? ratings;
   List<String> tokens;
   bool allowNewsNotifications;
   bool allowLostAndFoundNotifications;
   List<UserNotification> userNotifications;
   String? office;
 
-  UserModel({
-    required this.id,
-    required this.name,
-    required this.email,
-    required this.handle,
-    required this.photoUrl,
-    required this.photoUrl,
-    required this.type,
-    required this.roomLocationId,
-    required this.ratings,
-    required this.tokens,
-    required this.allowNewsNotifications,
-    required this.allowLostAndFoundNotifications,
-    required this.userNotifications,
-    this.office
-  });
-
+  UserModel(
+      {required this.id,
+      required this.name,
+      required this.email,
+      required this.handle,
+      required this.photoUrl,
+      required this.type,
+      required this.roomLocationId,
+      required this.ratings,
+      required this.tokens,
+      required this.allowNewsNotifications,
+      required this.allowLostAndFoundNotifications,
+      required this.userNotifications,
+      this.office});
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -39,7 +36,7 @@ class UserModel {
         'photoUrl': photoUrl,
         'type': type,
         'roomLocationId': roomLocationId,
-        'ratings':ratings,
+        'ratings': ratings,
         'office': office,
         'tokens': tokens,
         'allowNewsNotifications': allowNewsNotifications,
@@ -50,22 +47,21 @@ class UserModel {
       };
 
   static UserModel fromJson(Map<String, dynamic> json) => UserModel(
-        id: json['id'],
-        name: json['name'],
-        email: json['email'],
-        handle: json['handle'],
-        photoUrl: json['photoUrl'],
-        type: json['type'],
-        roomLocationId: json['roomLocationId'],
-        ratings: (json['ratings'] as Map<String, dynamic>).cast<String, double>(),
-        tokens: (json['tokens'] as List<dynamic>).cast<String>(),
-        allowNewsNotifications: json['allowNewsNotifications'],
-        allowLostAndFoundNotifications: json['allowLostAndFoundNotifications'],
-        userNotifications: ((json['userNotifications'] ?? []) as List<dynamic>)
-            .map((notification) => UserNotification.fromJson(notification))
-            .toList(),
-    office: json['office']
-      );
+      id: json['id'],
+      name: json['name'],
+      email: json['email'],
+      handle: json['handle'],
+      photoUrl: json['photoUrl'],
+      type: json['type'],
+      roomLocationId: json['roomLocationId'],
+      ratings: (json['ratings'] as Map<String, dynamic>).cast<String, double>(),
+      tokens: (json['tokens'] as List<dynamic>).cast<String>(),
+      allowNewsNotifications: json['allowNewsNotifications'],
+      allowLostAndFoundNotifications: json['allowLostAndFoundNotifications'],
+      userNotifications: ((json['userNotifications'] ?? []) as List<dynamic>)
+          .map((notification) => UserNotification.fromJson(notification))
+          .toList(),
+      office: json['office']);
 }
 
 class UserNotification {
