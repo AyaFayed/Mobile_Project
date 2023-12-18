@@ -35,7 +35,9 @@ class _LargeBtnState extends State<LargeBtn> {
     return ElevatedButton(
         style: ElevatedButton.styleFrom(
             minimumSize: const Size.fromHeight(50.0),
-            textStyle: TextStyle(fontSize: Sizes.medium),
+            textStyle:
+                TextStyle(fontSize: Sizes.medium, color: AppColors.light),
+            foregroundColor: AppColors.light,
             backgroundColor: widget.color ?? AppColors.confirm),
         onPressed:
             _isButtonDisabled || (widget.onPressed == null) ? null : onPressed,

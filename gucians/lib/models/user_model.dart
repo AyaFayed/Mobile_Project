@@ -52,7 +52,7 @@ class UserModel {
         photoUrl: json['photoUrl'],
         isStaff: json['isStaff'],
         roomLocationId: json['roomLocationId'],
-        ratingIds: json['ratingIds'],
+        ratingIds: (json['ratingIds'] as List<dynamic>).cast<String>(),
         tokens: (json['tokens'] as List<dynamic>).cast<String>(),
         allowNewsNotifications: json['allowNewsNotifications'],
         allowLostAndFoundNotifications: json['allowLostAndFoundNotifications'],
