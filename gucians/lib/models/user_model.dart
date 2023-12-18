@@ -4,13 +4,14 @@ class UserModel {
   String email;
   String handle;
   String? photoUrl;
-  bool isStaff;
+  String type;
   String? roomLocationId;
-  List<String> ratingIds;
+  Map<String,double>? ratings;
   List<String> tokens;
   bool allowNewsNotifications;
   bool allowLostAndFoundNotifications;
   List<UserNotification> userNotifications;
+  String? office;
 
   UserModel({
     required this.id,
@@ -18,14 +19,17 @@ class UserModel {
     required this.email,
     required this.handle,
     required this.photoUrl,
-    required this.isStaff,
+    required this.photoUrl,
+    required this.type,
     required this.roomLocationId,
-    required this.ratingIds,
+    required this.ratings,
     required this.tokens,
     required this.allowNewsNotifications,
     required this.allowLostAndFoundNotifications,
     required this.userNotifications,
+    this.office
   });
+
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -33,9 +37,10 @@ class UserModel {
         'email': email,
         'handle': handle,
         'photoUrl': photoUrl,
-        'isStaff': isStaff,
+        'type': type,
         'roomLocationId': roomLocationId,
-        'ratingIds': ratingIds,
+        'ratings':ratings,
+        'office': office,
         'tokens': tokens,
         'allowNewsNotifications': allowNewsNotifications,
         'allowLostAndFoundNotifications': allowLostAndFoundNotifications,
@@ -50,15 +55,16 @@ class UserModel {
         email: json['email'],
         handle: json['handle'],
         photoUrl: json['photoUrl'],
-        isStaff: json['isStaff'],
+        type: json['type'],
         roomLocationId: json['roomLocationId'],
-        ratingIds: (json['ratingIds'] as List<dynamic>).cast<String>(),
+        ratings: (json['ratings'] as Map<String, dynamic>).cast<String, double>(),
         tokens: (json['tokens'] as List<dynamic>).cast<String>(),
         allowNewsNotifications: json['allowNewsNotifications'],
         allowLostAndFoundNotifications: json['allowLostAndFoundNotifications'],
         userNotifications: ((json['userNotifications'] ?? []) as List<dynamic>)
             .map((notification) => UserNotification.fromJson(notification))
             .toList(),
+    office: json['office']
       );
 }
 

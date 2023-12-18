@@ -7,6 +7,6 @@ class EmergencyNum {
 
   Map<String, dynamic> toJson() => {'id': id, 'name': name, 'number': number};
 
-  static EmergencyNum fromJson(Map<String, dynamic> json) =>
-      EmergencyNum(id: json['id'], name: json['name'], number: json['number']);
+  static EmergencyNum fromJson(Map<String, dynamic> json,String id) =>
+      EmergencyNum(id: id, name: json['name'], number: json['number']);
 }

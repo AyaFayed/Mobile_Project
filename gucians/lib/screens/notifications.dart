@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:gucians/controllers/notification_controller.dart';
 import 'package:gucians/models/notification_model.dart';
 import 'package:gucians/theme/colors.dart';
@@ -58,3 +59,4 @@ class _NotificationsState extends State<Notifications> {
                       )));
   }
 }
+
