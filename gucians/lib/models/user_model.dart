@@ -5,19 +5,27 @@ class UserModel {
   String? photoUrl;
   String type;
   String? roomLocationId;
-  int rating;
-  int ratingsCount;
+  Map<String,double>? ratings;
 
-  UserModel({
-    required this.id,
-    required this.name,
-    required this.handle,
-    required this.photoUrl,
-    required this.type,
-    required this.roomLocationId,
-    required this.rating,
-    required this.ratingsCount,
-  });
+  // int? rating;
+  // int? ratingsCount;
+
+
+  String? email;
+  String? office;
+
+  UserModel(
+      {required this.id,
+      required this.name,
+      required this.handle,
+      this.photoUrl,
+      required this.type,
+      this.roomLocationId,
+      this.ratings,
+      //  this.rating,
+      //  this.ratingsCount,
+      this.email,
+      this.office});
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -26,18 +34,27 @@ class UserModel {
         'photoUrl': photoUrl,
         'type': type,
         'roomLocationId': roomLocationId,
-        'rating': rating,
-        'ratingsCount': ratingsCount
+        'ratings':ratings,
+        // 'rating': rating,
+        // 'ratingsCount': ratingsCount,
+        'office': office,
+        'email': email,
       };
 
-  static UserModel fromJson(Map<String, dynamic> json) => UserModel(
-      // id: json['id'],
-      id:'id123',
-      name: json['name'],
-      handle: json['handle'],
-      photoUrl: json['photoUrl'],
-      type: json['type'],
-      roomLocationId: json['roomLocationId'],
-      rating: json['rating'],
-      ratingsCount: json['ratingsCount']);
+  static UserModel fromJson(Map<String, dynamic> json, String userId) =>
+      UserModel(
+          id: userId,
+          // id:'id123',
+          name: json['name'],
+          handle: json['handle'],
+          photoUrl: json['photoUrl'],
+          type: json['type'],
+          roomLocationId: json['roomLocationId'],
+          ratings: (json['ratings'] as Map<String, dynamic>).cast<String, double>(),
+          // rating: json['rating'],
+          // ratingsCount: json['ratingsCount'],
+          office: json['office'],
+          email: json['email'],
+          );
+
 }

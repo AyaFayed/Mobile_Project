@@ -1,25 +1,31 @@
 class Post {
-  String id;
+  String? id;
   String content;
   String? file;
   String authorId;
   List<String> commentIds;
   List<String> tags;
-  int votes;
+  List<String> upVoters;
+  List<String> downVoters;
+  List<String> reporters;
   String category;
   bool? approved;
+  bool? anonymous;
   DateTime createdAt;
 
   Post(
-      {required this.id,
+      {this.id,
       required this.content,
-      required this.file,
+      this.file,
       required this.authorId,
       required this.commentIds,
       required this.tags,
-      required this.votes,
+      required this.upVoters,
+      required this.downVoters,
+      required this.reporters,
       required this.category,
-      required this.approved,
+      this.approved,
+      this.anonymous,
       required this.createdAt});
 
   Map<String, dynamic> toJson() => {
@@ -29,22 +35,28 @@ class Post {
         'authorId': authorId,
         'commentIds': commentIds,
         'tags': tags,
-        'votes': votes,
-        'category':category,
-        'approved':approved,
+        'upVoters': upVoters,
+        'downVoters': downVoters,
+        'reporters': reporters,
+        'category': category,
+        'approved': approved,
+        'anonymous': anonymous,
         'createdAt': createdAt.millisecondsSinceEpoch,
       };
 
-  static Post fromJson(Map<String, dynamic> json,String docId) => Post(
-        id:docId,
+  static Post fromJson(Map<String, dynamic> json, String docId) => Post(
+        id: docId,
         content: json['content'],
         file: json['file'],
         authorId: json['authorId'],
         commentIds: (json['commentIds'] as List<dynamic>).cast<String>(),
         tags: (json['tags'] as List<dynamic>).cast<String>(),
-        votes: json['votes'],
+        upVoters: (json['upVoters'] as List<dynamic>).cast<String>(),
+        downVoters: (json['downVoters'] as List<dynamic>).cast<String>(),
+        reporters: (json['reporters'] as List<dynamic>).cast<String>(),
         category: json['category'],
-        approved: json['approved']??true,
-        createdAt: json['createdAt'].toDate(),
+        approved: json['approved'],
+        anonymous: json['anonymous'],
+        createdAt: DateTime.fromMillisecondsSinceEpoch(json['createdAt']),
       );
 }

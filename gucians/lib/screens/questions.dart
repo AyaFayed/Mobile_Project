@@ -11,6 +11,6 @@ class Questions extends StatefulWidget {
 class _QuestionsState extends State<Questions> {
   @override
   Widget build(BuildContext context) {
-    return PostsByCategory(category: 'question');
+    return const PostsByCategory(category: 'question');
   }
 }

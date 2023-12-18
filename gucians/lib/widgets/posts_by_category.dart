@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:gucians/models/non_database_models/user_to_post.dart';
 import 'package:gucians/models/post_model.dart';
 import 'package:gucians/models/user_model.dart';
+import 'package:gucians/services/user_info_service.dart';
 import 'package:gucians/widgets/read_post_card.dart';
 
 class PostsByCategory extends StatefulWidget {
@@ -17,37 +19,57 @@ class _PostsByCategoryState extends State<PostsByCategory> {
   bool loading = true;
   var posts = [];
   var users = [];
+String userId='';
 
+ Future<void> deletePost(String idToDelete) async {
+  final idx=posts.indexWhere((element) => element.id==idToDelete);
+  posts.removeAt(idx);
+  users.removeAt(idx);
+  try {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    await firestore.collection('posts').doc(idToDelete).delete();
+    print('post deleted successfully.');
+  } catch (e) {
+    print('Error deleting post: $e');
+  }
+  setState(() {
+    
+  });
+}
   Future<void> getPosts() async {
     final List<Post> fetchedPosts = [];
     final List<UserModel> fetchedUsers = [];
-    final _firestore = FirebaseFirestore.instance;
+    final firestore = FirebaseFirestore.instance;
 
     print('///////////////////////////////////');
-    print(this.widget.category);
+    print(widget.category);
     final QuerySnapshot<Map<String, dynamic>> querySnapshotPosts =
-        await _firestore
+        await firestore
             .collection('posts')
-            .where('category', isEqualTo: this.widget.category)
+            .where('category', isEqualTo: widget.category)
             .get();
 
-    querySnapshotPosts.docs.forEach((doc) {
+    for (var doc in querySnapshotPosts.docs) {
       fetchedPosts.add(Post.fromJson(doc.data(), doc.id));
-    });
+    }
 
     final List<DocumentSnapshot<Map<String, dynamic>>> snapshots =
         await Future.wait(fetchedPosts.map(
-      (post) => _firestore.collection('user').doc(post.authorId).get(),
+      (post) => firestore.collection('user').doc(post.authorId).get(),
     ));
 
     for (var snapshot in snapshots) {
       if (snapshot.exists) {
-        fetchedUsers.add(UserModel.fromJson(snapshot.data()!));
+        fetchedUsers.add(UserModel.fromJson(snapshot.data()!,snapshot.id));
+      }
+      else{
+        fetchedUsers.add(UserModel(id: 'id', name: 'name', handle: 'handle', type: 'type',));
       }
     }
 
     setState(() {
-      print("UnBlock ${this.widget.category}");
+      print("UnBlock ${widget.category}");
+      getCurrentUserId();
       loading = false;
       posts = fetchedPosts;
       users = fetchedUsers;
@@ -55,6 +77,12 @@ class _PostsByCategoryState extends State<PostsByCategory> {
     });
   }
 
+
+  void getCurrentUserId() {
+  
+    userId=UserInfoService.getCurrentUserId();
+  
+}
   @override
   void initState() {
    loading = true;
@@ -66,7 +94,7 @@ class _PostsByCategoryState extends State<PostsByCategory> {
 
     // loading=true;
   }
-
+  
    @override
   void didUpdateWidget(covariant PostsByCategory oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -83,14 +111,15 @@ class _PostsByCategoryState extends State<PostsByCategory> {
 
   @override
   Widget build(BuildContext context) {
-    print("Building for ${this.widget.category} +++++++++++++++++++++++++++++");
+    print("Building for ${widget.category} +++++++++++++++++++++++++++++");
     print(posts);
     return loading
-        ? Center(child: CircularProgressIndicator())
+        ? const Center(child: CircularProgressIndicator())
         : ListView.builder(
             itemCount: posts.length,
             itemBuilder: (BuildContext context, int index) {
-              return ReadPostCard(post: posts[index], owner: users[index]);
+              UserToPost userToPost=UserToPost(post: posts[index], myId: userId);
+              return ReadPostCard(post: posts[index], owner: users[index],userToPost: userToPost,func:deletePost);
             },
           );
   }
