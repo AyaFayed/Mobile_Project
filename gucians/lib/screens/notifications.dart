@@ -42,8 +42,7 @@ class _NotificationsState extends State<Notifications> {
             child: _notifications == null
                 ? const CircularProgressIndicator()
                 : _notifications!.isEmpty
-                    ? const Image(
-                        image: AssetImage('assets/images/no_data.png'))
+                    ? const Text('No Notifications')
                     : RefreshIndicator(
                         onRefresh: _getData,
                         child: ListView.separated(
@@ -59,4 +58,3 @@ class _NotificationsState extends State<Notifications> {
                       )));
   }
 }
-

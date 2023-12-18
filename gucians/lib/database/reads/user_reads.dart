@@ -29,4 +29,47 @@ class UserReads {
       return null;
     }
   }
+
+  Future<List<UserModel>> getAllUsers() async {
+    try {
+      QuerySnapshot querySnapshot = await _users.get();
+
+      List<UserModel> allUsers = querySnapshot.docs
+          .map((doc) => UserModel.fromJson(doc.data() as Map<String, dynamic>))
+          .toList();
+      return allUsers;
+    } catch (e) {
+      return [];
+    }
+  }
+
+  Future<List<UserModel>> getAllUsersWithAllowedNewsNotification() async {
+    try {
+      QuerySnapshot querySnapshot =
+          await _users.where('allowNewsNotifications', isEqualTo: true).get();
+
+      List<UserModel> allUsers = querySnapshot.docs
+          .map((doc) => UserModel.fromJson(doc.data() as Map<String, dynamic>))
+          .toList();
+      return allUsers;
+    } catch (e) {
+      return [];
+    }
+  }
+
+  Future<List<UserModel>>
+      getAllUsersWithAllowedLostAndFoundNotification() async {
+    try {
+      QuerySnapshot querySnapshot = await _users
+          .where('allowLostAndFoundNotifications', isEqualTo: true)
+          .get();
+
+      List<UserModel> allUsers = querySnapshot.docs
+          .map((doc) => UserModel.fromJson(doc.data() as Map<String, dynamic>))
+          .toList();
+      return allUsers;
+    } catch (e) {
+      return [];
+    }
+  }
 }
