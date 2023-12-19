@@ -55,6 +55,15 @@ class NotificationController {
     await createNotification([userId], title, body, postId, notificationType);
   }
 
+
+ Future createNotificationForListOfUsers(List<String> userIds, String title,
+      String body, String postId, NotificationType notificationType) async {
+        for (var id in userIds) {
+          await createNotification([id], title, body, postId, notificationType);
+        }
+  }
+
+
   Future createLostAndFoundNotification(String title, String body,
       String postId, NotificationType notificationType) async {
     List<UserModel> users =

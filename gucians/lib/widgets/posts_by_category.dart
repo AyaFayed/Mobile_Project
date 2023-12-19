@@ -63,7 +63,7 @@ String userId='';
         fetchedUsers.add(UserModel.fromJson(snapshot.data()!));
       }
       else{
-        fetchedUsers.add(UserModel(id: 'id', name: 'name', email: 'email', handle: 'handle', photoUrl: 'photoUrl', type: 'type', roomLocationId: 'roomLocationId', tokens: [], allowNewsNotifications: false, allowLostAndFoundNotifications: false, userNotifications: []));
+        fetchedUsers.add(UserModel(id: 'id', name: 'name', email: 'email', handle: 'handle', type: 'type', tokens: [], allowNewsNotifications: false, userNotifications: [], allowLostAndFoundNotifications: false));
       }
     }
 
