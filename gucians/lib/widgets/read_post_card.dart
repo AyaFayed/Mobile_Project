@@ -184,6 +184,9 @@ class _ReadPostCardState extends State<ReadPostCard> {
                                 );
                               },
                             );
+                          } else if (result == "Modify") {
+                            Navigator.pushNamed(context, ('/add_post'),
+                                arguments: {'post': widget.post});
                           }
                           // Perform an action based on the selected item
                         },

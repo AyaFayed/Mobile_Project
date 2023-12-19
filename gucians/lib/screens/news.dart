@@ -53,7 +53,7 @@
     
 //     final List<DocumentSnapshot<Map<String, dynamic>>> snapshots =
 //         await Future.wait(posts.map(
-//             (post) => _firestore.collection('user').doc(post.authorId).get()));
+//             (post) => _firestore.collection('users').doc(post.authorId).get()));
 //     for (var snapshot in snapshots) {
 //       if (snapshot.exists) {
 //         users.add(UserModel.fromJson(snapshot.data()!));

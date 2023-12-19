@@ -54,10 +54,11 @@ class _ButtomTabsControllerScreenState
 
   @override
   Widget build(BuildContext context) {
-    if(ModalRoute.of(context)!.settings.arguments!=null){
-      final x=ModalRoute.of(context)!.settings.arguments as Map<String,dynamic>;
-      if(x['selectedIdx']!=null){
-        selectedTabIdx=x['selectedIdx']!;
+    if (ModalRoute.of(context)!.settings.arguments != null) {
+      final x =
+          ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+      if (x['selectedIdx'] != null) {
+        selectedTabIdx = x['selectedIdx']!;
       }
     }
     return Scaffold(
@@ -72,31 +73,31 @@ class _ButtomTabsControllerScreenState
         }),
         title: Text(myTitles[selectedTabIdx]),
         actions: [
-          if(showAddBtn())
-          IconButton(
-              onPressed: () {
-                switch (selectedTabIdx) {
-                  case 2:
-                   Navigator.of(context).pushNamed('/add_confession');
-                    break;
-                  case 0:
-                   Navigator.of(context).pushNamed('/add_post',arguments: {'category':'news'});
-                    break;
-                  case 1:
-                   Navigator.of(context).pushNamed('/add_confession',arguments: {'category':'question'});
-                    break;
-                  
-                  default:
-                }
-                
-              },
-              icon: Icon(Icons.add))
+          if (showAddBtn())
+            IconButton(
+                onPressed: () {
+                  switch (selectedTabIdx) {
+                    case 2:
+                      Navigator.of(context).pushNamed('/add_confession');
+                      break;
+                    case 0:
+                      Navigator.of(context).pushNamed('/add_post',
+                          arguments: {'category': 'news'});
+                      break;
+                    case 1:
+                      Navigator.of(context).pushNamed('/add_post',
+                          arguments: {'category': 'question'});
+                      break;
+
+                    default:
+                  }
+                },
+                icon: Icon(Icons.add))
         ],
       ),
       drawer: MainDrawer(),
       resizeToAvoidBottomInset: true,
       body: myPages[selectedTabIdx],
-
       bottomNavigationBar: BottomNavigationBar(
         // backgroundColor: Colors.amber,
         items: [

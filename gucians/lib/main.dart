@@ -13,6 +13,7 @@ import 'package:gucians/screens/lost_and_found.dart';
 import 'package:gucians/screens/post_screens/add_confession.dart';
 import 'package:gucians/screens/post_screens/add_post.dart';
 import 'package:gucians/screens/professors_screens/search_professors.dart';
+import 'package:gucians/screens/settings.dart';
 import 'package:gucians/theme/themes.dart';
 import 'firebase_options.dart';
 
@@ -47,13 +48,14 @@ class MainApp extends StatelessWidget {
       theme: CustomTheme.lightTheme,
       initialRoute: '/',
       routes: {
-        '/':(context) => ButtomTabsControllerScreen(),
+        '/':(context) => Wrapper(),
         '/locations':(context) => const LocationsScreen(),
         '/lost_and_found':(context) => const LostAndFound(),
         '/prof_rating':(context) => const ProfessorRatingList(),
         '/add_confession':(context) => const AddConfession(),
         '/emergency':(context) => const EmergencyScreen(),
         '/add_post':(context) => const AddPost(),
+        '/settings': (context) => const Settings(),
 
       }
       

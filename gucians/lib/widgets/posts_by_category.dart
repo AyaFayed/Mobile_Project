@@ -45,7 +45,7 @@ class _PostsByCategoryState extends State<PostsByCategory> {
         await firestore
             .collection('posts')
             .where('category', isEqualTo: widget.category)
-            
+            .where('approved', isEqualTo: true)
             .get();
 
     for (var doc in querySnapshotPosts.docs) {
@@ -119,17 +119,21 @@ class _PostsByCategoryState extends State<PostsByCategory> {
     print(posts);
     return loading
         ? const Center(child: CircularProgressIndicator())
-        :posts.length==0?Center(child: Text('No Posts to display'),) :ListView.builder(
-            itemCount: posts.length,
-            itemBuilder: (BuildContext context, int index) {
-              UserToPost userToPost =
-                  UserToPost(post: posts[index], myId: userId);
-              return ReadPostCard(
-                  post: posts[index],
-                  owner: users[index],
-                  userToPost: userToPost,
-                  func: deletePost);
-            },
-          );
+        : posts.length == 0
+            ? Center(
+                child: Text('No Posts to display'),
+              )
+            : ListView.builder(
+                itemCount: posts.length,
+                itemBuilder: (BuildContext context, int index) {
+                  UserToPost userToPost =
+                      UserToPost(post: posts[index], myId: userId);
+                  return ReadPostCard(
+                      post: posts[index],
+                      owner: users[index],
+                      userToPost: userToPost,
+                      func: deletePost);
+                },
+              );
   }
 }
