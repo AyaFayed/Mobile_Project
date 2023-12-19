@@ -61,39 +61,82 @@ class _AddPostState extends State<AddPost> {
       if (oldPost != null) {
         oldPost?.content = _postField.text;
         editPost(oldPost!, image).then((value) {
-          Navigator.of(context).pop();
-          switch (oldPost!.category) {
-            case 'news':
-              Navigator.of(context)
-                  .pushReplacementNamed('/', arguments: {'selectedIdx': 0});
-            case 'question':
-              Navigator.of(context)
-                  .pushReplacementNamed('/', arguments: {'selectedIdx': 1});
-            case 'lost_and_found':
-              Navigator.of(context).pushReplacementNamed('/lost_and_found');
+          if (value == 'dirty' || value == 'failed') {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text('Hate Speech Detected'),
+                  content: Text('Please change your content.'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(); // Close the dialog
+                      },
+                      child: Text('OK'),
+                    ),
+                  ],
+                );
+              },
+            );
+          } else {
+            Navigator.of(context).pop();
+            switch (oldPost!.category) {
+              case 'news':
+                Navigator.of(context)
+                    .pushReplacementNamed('/', arguments: {'selectedIdx': 0});
+              case 'question':
+                Navigator.of(context)
+                    .pushReplacementNamed('/', arguments: {'selectedIdx': 1});
+              case 'lost_and_found':
+                Navigator.of(context).pushReplacementNamed('/lost_and_found');
 
-              break;
-            default:
+                break;
+              default:
+            }
           }
+
           overlayEntry.remove();
         });
       } else {
         print(category);
         addPost(_postField.text, false, category, image, tags).then((value) {
-          Navigator.of(context).pop();
-          switch (category) {
-            case 'news':
-              Navigator.of(context)
-                  .pushReplacementNamed('/', arguments: {'selectedIdx': 0});
-            case 'question':
-              Navigator.of(context)
-                  .pushReplacementNamed('/', arguments: {'selectedIdx': 1});
-            case 'lost_and_found':
-              Navigator.of(context).pushReplacementNamed('/lost_and_found');
+          print(value);
+          if (value == 'dirty' || value == 'failed') {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text('Hate Speech Detected'),
+                  content: Text('Please change your content.'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(); // Close the dialog
+                      },
+                      child: Text('OK'),
+                    ),
+                  ],
+                );
+              },
+            );
+          } else {
+            Navigator.of(context).pop();
+            switch (category) {
+              case 'news':
+                Navigator.of(context)
+                    .pushReplacementNamed('/', arguments: {'selectedIdx': 0});
+              case 'question':
+                Navigator.of(context)
+                    .pushReplacementNamed('/', arguments: {'selectedIdx': 1});
+              case 'lost_and_found':
+                Navigator.of(context).pushReplacementNamed('/lost_and_found');
 
-              break;
-            default:
+                break;
+              default:
+            }
           }
+
           overlayEntry.remove();
         });
       }
