@@ -55,7 +55,7 @@ String userId='';
 
     final List<DocumentSnapshot<Map<String, dynamic>>> snapshots =
         await Future.wait(fetchedPosts.map(
-      (post) => firestore.collection('user').doc(post.authorId).get(),
+      (post) => firestore.collection('users').doc(post.authorId).get(),
     ));
 
     for (var snapshot in snapshots) {

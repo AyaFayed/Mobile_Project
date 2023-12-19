@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gucians/common/constants.dart';
+import 'package:gucians/services/authentication_service.dart';
 import 'package:gucians/theme/colors.dart';
 import 'package:gucians/theme/sizes.dart';
 
@@ -8,6 +9,7 @@ class MainDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AuthService _auth = AuthService();
     return Drawer(
       child: Column(children: [
         Container(
@@ -22,7 +24,11 @@ class MainDrawer extends StatelessWidget {
         const SizedBox(
           height: 20,
         ),
-        Text(appName,style: TextStyle(fontSize: Sizes.xlarge,fontFamily: 'Poppins',letterSpacing: 4),),
+        Text(
+          appName,
+          style: TextStyle(
+              fontSize: Sizes.xlarge, fontFamily: 'Poppins', letterSpacing: 4),
+        ),
         ListTile(
           leading: Image.asset(
             'lib/icons/home.jpg',
@@ -71,6 +77,20 @@ class MainDrawer extends StatelessWidget {
           title: const Text("Emergency Contacts"),
           onTap: () {
             Navigator.of(context).pushNamed("/emergency");
+          },
+        ),
+        ListTile(
+          leading: Icon(Icons.settings),
+          title: const Text("Settings"),
+          onTap: () {
+            Navigator.of(context).pushNamed("/settings");
+          },
+        ),
+        ListTile(
+          leading: Icon(Icons.logout),
+          title: const Text("logout"),
+          onTap: () {
+            _auth.logout();
           },
         ),
       ]),

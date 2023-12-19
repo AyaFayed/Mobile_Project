@@ -13,15 +13,15 @@ class UserInfoService {
     return 'AJndJPDfP0bp86BVR3Nr';
   }
 
-  static Future<String> getUserType()async{
-    String id=getCurrentUserId();
+  static Future<String> getUserType() async {
+    String id = getCurrentUserId();
     final firestore = FirebaseFirestore.instance;
-    DocumentSnapshot<Map<String, dynamic>> snapshot=await firestore.collection('user').doc(id).get();
+    DocumentSnapshot<Map<String, dynamic>> snapshot =
+        await firestore.collection('users').doc(id).get();
     if (snapshot.exists) {
-        return snapshot.data()!['type'];
-      }
-      else{
-        return 'type';
-      }
+      return snapshot.data()!['type'];
+    } else {
+      return 'type';
+    }
   }
 }

@@ -24,7 +24,7 @@ class _StaffProfileState extends State<StaffProfile> {
   Future<void> updateRatings(dynamic ratings) async {
     try {
       DocumentReference postRef =
-          FirebaseFirestore.instance.collection('user').doc(widget.user.id);
+          FirebaseFirestore.instance.collection('users').doc(widget.user.id);
       await postRef.update({
         'ratings': ratings,
       });
