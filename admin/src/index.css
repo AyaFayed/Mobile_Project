@@ -1,0 +1,40 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+button.admin-toggle-button {
+  text-align: left;
+  display: block;
+  padding-left: 35px;
+
+}
+
+div.container {
+  display: flex;
+  flex-direction: column;
+  row-gap: 20px;
+  width: 50%;
+}
+
+div.card {
+  display: flex;
+  flex-direction: column;
+  row-gap: 20px;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  padding: 15px;
+  border-radius: 5px;
+}
+
+div.card p {
+  margin: 5px 0 0 0;
+}
