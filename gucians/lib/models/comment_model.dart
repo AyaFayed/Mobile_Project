@@ -1,5 +1,5 @@
 class Comment {
-  String id;
+  String? id;
   String content;
   // String authorId;
   String authorHandle;
@@ -7,7 +7,7 @@ class Comment {
   DateTime createdAt;
 
   Comment({
-    required this.id,
+     this.id,
     required this.content,
     required this.authorHandle,
     this.authorImgUrl,

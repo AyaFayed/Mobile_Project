@@ -27,6 +27,7 @@ class _ButtomTabsControllerScreenState
     'Notifications'
   ];
   var selectedTabIdx = 1;
+  bool done = false;
   void SwitchTab(int idx) {
     setState(() {
       selectedTabIdx = idx;
@@ -36,7 +37,7 @@ class _ButtomTabsControllerScreenState
   bool showAddBtn() {
     switch (selectedTabIdx) {
       case 0:
-        if (UserInfoService.getUserType() == 'club') {
+        if (UserInfoService.getUserAttribute('type') == 'club') {
           return true;
         }
         break;
@@ -54,9 +55,10 @@ class _ButtomTabsControllerScreenState
 
   @override
   Widget build(BuildContext context) {
-    if (ModalRoute.of(context)!.settings.arguments != null) {
+    if (ModalRoute.of(context)!.settings.arguments != null && !done) {
       final x =
           ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+      done = true;
       if (x['selectedIdx'] != null) {
         selectedTabIdx = x['selectedIdx']!;
       }
