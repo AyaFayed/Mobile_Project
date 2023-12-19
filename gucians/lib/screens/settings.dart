@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:gucians/controllers/user_controller.dart';
 import 'package:gucians/models/user_model.dart';
@@ -5,6 +8,7 @@ import 'package:gucians/services/authentication_service.dart';
 import 'package:gucians/theme/colors.dart';
 import 'package:gucians/theme/sizes.dart';
 import 'package:gucians/widgets/buttons/large_btn.dart';
+import 'package:image_picker/image_picker.dart';
 
 class Settings extends StatefulWidget {
   const Settings({super.key});
@@ -17,6 +21,79 @@ class _SettingsState extends State<Settings> {
   final AuthService _auth = AuthService();
   final UserController _userController = UserController();
   UserModel? _currentUser;
+  XFile? image;
+  final ImagePicker picker = ImagePicker();
+
+  Future getImage(ImageSource media) async {
+    var img = await picker.pickImage(source: media);
+    var imgUrl = await getImageUrl(img!);
+    await _userController.updatePhoto(imgUrl!);
+    setState(() {
+      image = img;
+    });
+  }
+
+  Future<String?> getImageUrl(XFile imageFile) async {
+    try {
+      File image = File(imageFile.path);
+      String imageName = image.path.split('/').last;
+      print(imageName);
+      Reference storageReference =
+          FirebaseStorage.instance.ref().child('$imageName');
+      UploadTask uploadTask = storageReference.putFile(image);
+      TaskSnapshot storageTaskSnapshot = await uploadTask;
+      String downloadUrl = await storageTaskSnapshot.ref.getDownloadURL();
+      return imageName;
+    } catch (error) {
+      print('Failed to upload image: $error');
+      return null;
+    }
+  }
+
+  void myAlert() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            title: const Text('Please choose media to select'),
+            content: SizedBox(
+              height: MediaQuery.of(context).size.height / 6,
+              child: Column(
+                children: [
+                  ElevatedButton(
+                    //if user click this button, user can upload image from gallery
+                    onPressed: () {
+                      Navigator.pop(context);
+                      getImage(ImageSource.gallery);
+                    },
+                    child: const Row(
+                      children: [
+                        Icon(Icons.image),
+                        Text('From Gallery'),
+                      ],
+                    ),
+                  ),
+                  ElevatedButton(
+                    //if user click this button. user can upload image from camera
+                    onPressed: () {
+                      Navigator.pop(context);
+                      getImage(ImageSource.camera);
+                    },
+                    child: const Row(
+                      children: [
+                        Icon(Icons.camera),
+                        Text('From Camera'),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
+  }
 
   Future<void> setNewsNotifications(bool val) async {
     await _userController.updateAllowNewsNotifications(val);
@@ -97,10 +174,20 @@ class _SettingsState extends State<Settings> {
                                     true,
                             onChanged: setLostAndFoundNotifications),
                         const SizedBox(
-                          height: 60,
+                          height: 30,
                         ),
                         LargeBtn(
-                            color: AppColors.primary,
+                          onPressed: () async {
+                            myAlert();
+                          },
+                          text: 'Add profile photo',
+                          color: AppColors.dark,
+                        ),
+                        const SizedBox(
+                          height: 30,
+                        ),
+                        LargeBtn(
+                            color: AppColors.dark,
                             onPressed: () async {
                               await _auth.logout();
                             },

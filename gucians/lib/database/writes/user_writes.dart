@@ -31,6 +31,10 @@ class UserWrites {
     await _users.doc(userId).update({'allowLostAndFoundNotifications': value});
   }
 
+  Future updatePhoto(String userId, String value) async {
+    await _users.doc(userId).update({'photoUrl': value});
+  }
+
   Future addToken(String token) async {
     if (_auth.currentUser == null) return;
     try {

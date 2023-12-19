@@ -72,6 +72,11 @@ class UserController {
         _auth.currentUser?.uid ?? '', value);
   }
 
+  Future updatePhoto(String value) async {
+    if (_auth.currentUser == null) return;
+    await _userWrites.updatePhoto(_auth.currentUser?.uid ?? '', value);
+  }
+
   Future updateAllowLostAndFoundNotifications(bool value) async {
     if (_auth.currentUser == null) return;
     await _userWrites.updateAllowLostAndFoundNotifications(
