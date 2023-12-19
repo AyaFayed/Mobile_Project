@@ -11,4 +11,6 @@ class AppColors {
   static Color selected = Colors.black;
   static Color unselected = Colors.grey;
   static Color lightGrey = Colors.grey[200]!;
+  static Color darkGrey = const Color.fromARGB(255, 83, 83, 83);
+  
 }

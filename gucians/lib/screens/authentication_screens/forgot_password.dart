@@ -15,6 +15,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   final controllerEmail = TextEditingController();
   final AuthService _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
+  var infoMessage = "";
 
   Future<void> resetPassword() async {
     if (_formKey.currentState!.validate()) {
@@ -22,19 +23,11 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       if (context.mounted) {
         if (result == null) {
           controllerEmail.clear();
-          // QuickAlert.show(
-          //   context: context,
-          //   type: QuickAlertType.success,
-          //   confirmBtnColor: AppColors.confirm,
-          //   text: Confirmations.resetPasswordEmail,
-          // );
+          setState(() {
+            infoMessage = "Reset password email was sent successfully.";
+          });
         } else {
-          // QuickAlert.show(
-          //   context: context,
-          //   type: QuickAlertType.error,
-          //   confirmBtnColor: AppColors.confirm,
-          //   text: result,
-          // );
+          infoMessage = ErrorMessages.backend;
         }
       }
     }
@@ -83,6 +76,11 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                         onPressed: () => resetPassword(),
                         text: 'Reset password',
                         icon: Icon(Icons.email, size: Sizes.medium)),
+                    const SizedBox(height: 20.0),
+                    Text(
+                      infoMessage,
+                      style: TextStyle(fontSize: Sizes.xsmall),
+                    )
                   ],
                 ),
               )),

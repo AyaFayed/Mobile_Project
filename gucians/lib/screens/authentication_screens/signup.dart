@@ -1,5 +1,6 @@
 import "package:flutter/gestures.dart";
 import "package:flutter/material.dart";
+import "package:gucians/common/constants.dart";
 import "package:gucians/common/error_messages.dart";
 import "package:gucians/services/authentication_service.dart";
 import "package:gucians/theme/colors.dart";
@@ -20,6 +21,7 @@ class _SignupState extends State<Signup> {
   final controllerPassword = TextEditingController();
   final controllerConfirmPassword = TextEditingController();
   final controllerName = TextEditingController();
+  final controllerHandle = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   String error = '';
@@ -27,7 +29,7 @@ class _SignupState extends State<Signup> {
   Future<void> signup() async {
     if (_formKey.currentState!.validate()) {
       dynamic result = await _auth.signup(controllerEmail.text.trim(),
-          controllerPassword.text, controllerName.text);
+          controllerPassword.text, controllerName.text, controllerHandle.text);
       if (result != null) {
         setState(() => error = result);
       }
@@ -37,8 +39,8 @@ class _SignupState extends State<Signup> {
   bool isValidMail(String email) {
     try {
       String emailSecondHalf = email.split('@')[1];
-      return emailSecondHalf == 'student.guc.edu.eg' ||
-          emailSecondHalf == 'guc.edu.eg';
+      return emailSecondHalf == studentEmailSecondHalf ||
+          emailSecondHalf == staffEmailSecondHalf;
     } catch (e) {
       return false;
     }
@@ -76,15 +78,15 @@ class _SignupState extends State<Signup> {
                       !isValidMail(val!) ? ErrorMessages.email : null,
                   controller: controllerEmail,
                 ),
-                const SizedBox(height: 20.0),
+                const SizedBox(height: 10.0),
                 TextFormField(
                   decoration: const InputDecoration(
                       labelText: 'Handle', errorMaxLines: 3),
                   validator: (val) =>
                       val!.isEmpty ? ErrorMessages.required : null,
-                  controller: controllerName,
+                  controller: controllerHandle,
                 ),
-                const SizedBox(height: 20.0),
+                const SizedBox(height: 10.0),
                 TextFormField(
                   decoration: const InputDecoration(
                       labelText: 'Name', errorMaxLines: 3),
@@ -92,7 +94,7 @@ class _SignupState extends State<Signup> {
                       val!.isEmpty ? ErrorMessages.required : null,
                   controller: controllerName,
                 ),
-                const SizedBox(height: 20.0),
+                const SizedBox(height: 10.0),
                 TextFormField(
                   obscureText: true,
                   decoration: const InputDecoration(
@@ -101,7 +103,7 @@ class _SignupState extends State<Signup> {
                       val!.length < 6 ? ErrorMessages.password : null,
                   controller: controllerPassword,
                 ),
-                const SizedBox(height: 20.0),
+                const SizedBox(height: 10.0),
                 TextFormField(
                   obscureText: true,
                   decoration: const InputDecoration(
