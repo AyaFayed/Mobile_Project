@@ -60,10 +60,10 @@ String userId='';
 
     for (var snapshot in snapshots) {
       if (snapshot.exists) {
-        fetchedUsers.add(UserModel.fromJson(snapshot.data()!,snapshot.id));
+        fetchedUsers.add(UserModel.fromJson(snapshot.data()!));
       }
       else{
-        fetchedUsers.add(UserModel(id: 'id', name: 'name', handle: 'handle', type: 'type',));
+        fetchedUsers.add(UserModel(id: 'id', name: 'name', email: 'email', handle: 'handle', photoUrl: 'photoUrl', type: 'type', roomLocationId: 'roomLocationId', tokens: [], allowNewsNotifications: false, allowLostAndFoundNotifications: false, userNotifications: []));
       }
     }
 

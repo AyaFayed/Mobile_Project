@@ -21,7 +21,7 @@ class UserModel {
       required this.photoUrl,
       required this.type,
       required this.roomLocationId,
-      required this.ratings,
+      this.ratings,
       required this.tokens,
       required this.allowNewsNotifications,
       required this.allowLostAndFoundNotifications,
