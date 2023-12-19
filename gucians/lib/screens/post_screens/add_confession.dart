@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:gucians/models/user_model.dart';
 import 'package:gucians/services/createpost_service.dart';
+import 'package:gucians/services/professors_service.dart';
 import 'package:gucians/theme/sizes.dart';
 import 'package:gucians/theme/colors.dart';
 
@@ -16,14 +18,48 @@ class _AddConfessionState extends State<AddConfession> {
   bool submitted = false;
   String error = '';
   bool anonymous = false;
+  var tagsCtrl = TextEditingController();
+  List<UserModel> users = [];
+  List<UserModel> filteredUsers = [];
   List<String> tags = [];
+  bool loading = true;
+  @override
+  void initState() {
+    super.initState();
+    loadUsers();
+  }
+
+  Future<void> loadUsers() async {
+    List<UserModel> tempUsers = await getUsers();
+    setState(() {
+      users = tempUsers;
+      filteredUsers = users;
+      loading = false;
+    });
+  }
+
+  Future<List<UserModel>> getUsers() async {
+    return await getAllUsers();
+  }
+
   void submitPost() {
     submitted = true;
     if (_formKey.currentState!.validate()) {
       addPost(_postField.text, anonymous, 'confession', null, tags);
       Navigator.of(context).pop();
-      Navigator.of(context).pushReplacementNamed('/',arguments: {'selectedIdx':2});
+      Navigator.of(context)
+          .pushReplacementNamed('/', arguments: {'selectedIdx': 2});
     }
+  }
+
+  void filterUsersList(String query) {
+    setState(() {
+      if (query == "") tagsCtrl.text = query;
+      filteredUsers = users
+          .where(
+              (user) => user.name.toLowerCase().startsWith(query.toLowerCase()))
+          .toList();
+    });
   }
 
   @override
@@ -89,8 +125,34 @@ class _AddConfessionState extends State<AddConfession> {
                     height: 16.0), // Adding space between text field and button
                 // Button to post
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  // mainAxisAlignment: MainAxisAlignment.end,
                   children: [
+                    Container(
+                      width: 150,
+                      child: SearchBar(
+                        controller: tagsCtrl,
+                        leading: Container(
+                          margin: const EdgeInsets.only(left: 10),
+                          child: const Icon(Icons.search),
+                        ),
+                        hintText: '@handle',
+                        overlayColor:
+                            MaterialStateProperty.all(AppColors.lightGrey),
+                        // trailing: [
+                        //   if (tagsCtrl.text.isNotEmpty)
+                        //     TextButton(
+                        //         onPressed: () => filterUsersList(""),
+                        //         child: const Icon(
+                        //           Icons.clear,
+                        //           color: Colors.black,
+                        //         ))
+                        // ],
+                        onChanged: (String value) {
+                          filterUsersList(value);
+                        },
+                      ),
+                    ),
+                    Spacer(),
                     ElevatedButton(
                       onPressed: () {
                         submitPost();

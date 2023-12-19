@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:gucians/models/comment_model.dart';
 import 'package:gucians/models/non_database_models/user_to_post.dart';
 import 'package:gucians/models/user_model.dart';
+import 'package:gucians/services/user_info_service.dart';
 import 'package:gucians/theme/colors.dart';
 import 'package:gucians/widgets/user_img.dart';
 
@@ -301,10 +302,8 @@ class _ReadPostCardState extends State<ReadPostCard> {
                                         .bottom),
                                 // Set your preferred height for the bottom sheet
                                 child: commentsComponent(
-                                    commentIds: widget.post.commentIds,
-                                    category: widget.post.category,
-                                    anonymous: widget.post.anonymous ?? false,
-                                    postOwnerId: widget.post.authorId));
+                                  post: widget.post,
+                                ));
                           },
                         );
                       },
@@ -415,16 +414,12 @@ class _voteComponentState extends State<voteComponent> {
 }
 
 class commentsComponent extends StatefulWidget {
-  List<String> commentIds;
-  String postOwnerId;
-  String category;
-  bool anonymous;
-  commentsComponent(
-      {super.key,
-      required this.commentIds,
-      required this.category,
-      required this.anonymous,
-      required this.postOwnerId});
+  Post post;
+  
+  commentsComponent({
+    super.key,
+    required this.post,
+  });
 
   @override
   State<commentsComponent> createState() => _commentsComponentState();
@@ -433,12 +428,12 @@ class commentsComponent extends StatefulWidget {
 class _commentsComponentState extends State<commentsComponent> {
   var comments = [];
   bool loading = true;
-
+  var commentContentCtrl = TextEditingController();
   Future<void> getComments() async {
     final firestore = FirebaseFirestore.instance;
     final List<Comment> fetchedComments = [];
     final List<DocumentSnapshot<Map<String, dynamic>>> snapshots =
-        await Future.wait(widget.commentIds.map(
+        await Future.wait(widget.post.commentIds.map(
       (id) => firestore.collection('comments').doc(id).get(),
     ));
 
@@ -453,10 +448,50 @@ class _commentsComponentState extends State<commentsComponent> {
     });
   }
 
+  Future<void> deleteComment(String idToDelete) async {
+    comments.removeWhere((element) => element.id == idToDelete);
+    widget.post.commentIds.removeWhere((element) => element == idToDelete);
+    try {
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+      await firestore.collection('comments').doc(idToDelete).delete();
+      await firestore
+          .collection('posts')
+          .doc(widget.post.id)
+          .update({'commentIds': widget.post.commentIds});
+      print('comment deleted successfully.');
+    } catch (e) {
+      print('Error deleting post: $e');
+    }
+    setState(() {});
+  }
+var myHandle='';
+var myImgUrl='';
   @override
   void initState() {
+    UserInfoService.getUserAttribute('handle').then((value) => myHandle=value);
+    UserInfoService.getUserAttribute('photoUrl').then((value) => myImgUrl=value);
     getComments();
     super.initState();
+  }
+
+  Future<void> createComment(String content)async{
+    commentContentCtrl.text='';
+   var authHandle= await UserInfoService.getUserAttribute('handle'); 
+   var authImgUrl= await UserInfoService.getUserAttribute('photoUrl'); 
+   
+    Comment newComment=Comment(content: content, authorHandle: authHandle,authorImgUrl: authImgUrl!=''?authImgUrl:null, createdAt: DateTime.now());
+    FirebaseFirestore.instance.collection('comments').add(newComment.toJson()).then(
+      (value){
+        widget.post.commentIds.add(value.id);
+        comments.add(newComment);
+        FirebaseFirestore.instance.collection('posts').doc(widget.post.id).update({'commentIds':widget.post.commentIds});
+        setState(() {
+          
+        });
+      }
+    ).catchError((err){
+      print(err);
+    });
   }
 
   @override
@@ -474,20 +509,22 @@ class _commentsComponentState extends State<commentsComponent> {
                 height: 300,
                 child: ListView.builder(
                   shrinkWrap: true,
-                  itemCount: widget.commentIds.length,
+                  itemCount: widget.post.commentIds.length,
                   itemBuilder: (BuildContext context, int index) {
                     return Container(
                         margin: const EdgeInsets.only(top: 5, bottom: 10),
                         child: ListTile(
                           contentPadding:
                               const EdgeInsets.symmetric(horizontal: 0),
-                          leading: ClipOval(
-                              child: UserImg(
-                            anonymous: widget.category == 'confession' &&
-                                widget.anonymous,
-                            path: comments[index].authorImgUrl,
-                          )
-                              ),
+                          leading: Container(
+                            margin: EdgeInsets.only(top: 5),
+                            child: ClipOval(
+                                child: UserImg(
+                              anonymous: widget.post.category == 'confession' &&
+                                  widget.post.anonymous!,
+                              path: comments[index].authorImgUrl,
+                            )),
+                          ),
                           title: Container(
                               padding: const EdgeInsets.all(5),
                               decoration: BoxDecoration(
@@ -498,13 +535,69 @@ class _commentsComponentState extends State<commentsComponent> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Container(
-                                      margin: EdgeInsets.only(bottom: 5),
-                                      child: Text(
-                                        comments[index].authorHandle,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                      )),
+                                  Row(
+                                    children: [
+                                      Container(
+                                          margin: EdgeInsets.only(bottom: 5),
+                                          child: Text(
+                                            comments[index].authorHandle,
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
+                                          )),
+                                      Spacer(),
+                                      Text(_ReadPostCardState.getTime(
+                                          comments[index].createdAt)),
+                                          
+                                          if(comments[index].authorHandle==myHandle)
+                                      PopupMenuButton<String>(
+                                        onSelected: (String result) {
+                                          print('Selected: $result');
+                                          if (result == 'Delete') {
+                                            showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return AlertDialog(
+                                                  title: const Text(
+                                                      'Delete Comment'),
+                                                  content: const Text(
+                                                      'Are you sure you want to delete this comment?'),
+                                                  actions: <Widget>[
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop(); // Close the dialog
+                                                      },
+                                                      child:
+                                                          const Text('Cancel'),
+                                                    ),
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        // widget.func(widget.post.id);
+                                                        deleteComment(widget
+                                                            .post
+                                                            .commentIds[index]);
+                                                        Navigator.of(context)
+                                                            .pop(); // Close the dialog
+                                                      },
+                                                      child:
+                                                          const Text('Delete'),
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            );
+                                          }
+                                        },
+                                        itemBuilder: (BuildContext context) =>
+                                            <PopupMenuEntry<String>>[
+                                          const PopupMenuItem<String>(
+                                            value: 'Delete',
+                                            child: Text('Delete comment'),
+                                          ),
+                                        ],
+                                      )
+                                    ],
+                                  ),
                                   Text(comments[index].content),
                                 ],
                               )),
@@ -515,8 +608,16 @@ class _commentsComponentState extends State<commentsComponent> {
               Container(
                 padding: EdgeInsets.only(left: 10, right: 10),
                 child: TextField(
+                  autofocus: true,
+                  controller: commentContentCtrl,
+                  
                   decoration: InputDecoration(
+                    
+                    suffixIcon: IconButton(icon: Icon(Icons.send),onPressed: (){
+                      createComment(commentContentCtrl.text);
+                    },),
                     hintText: 'What do you think?',
+                    
                     border: OutlineInputBorder(
                       // Border configuration
                       borderRadius:
@@ -525,7 +626,9 @@ class _commentsComponentState extends State<commentsComponent> {
                           color: Colors.grey,
                           width: 0.8), // Set border color and width
                     ),
+                    
                   ),
+                  
                 ),
               ),
               // Add your comment widgets here

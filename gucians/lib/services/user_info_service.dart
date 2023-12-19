@@ -10,18 +10,21 @@ class UserInfoService {
       return user.uid; // This is the ID of the currently logged-in user
     }
     //for testing...
-    return 'AJndJPDfP0bp86BVR3Nr';
+    return 'OZ0B6Owm05aVaYjEBynWHqJRYkf1';
   }
 
-  static Future<String> getUserType()async{
+  static Future<String> getUserAttribute(String att)async{
     String id=getCurrentUserId();
     final firestore = FirebaseFirestore.instance;
-    DocumentSnapshot<Map<String, dynamic>> snapshot=await firestore.collection('user').doc(id).get();
+    DocumentSnapshot<Map<String, dynamic>> snapshot=await firestore.collection('users').doc(id).get();
     if (snapshot.exists) {
-        return snapshot.data()!['type'];
+        return snapshot.data()![att]??'';
       }
       else{
-        return 'type';
+        return att;
       }
   }
+
+
+  
 }

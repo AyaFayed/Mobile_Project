@@ -19,5 +19,21 @@ Future<List<UserModel>> getStaffUsers() async {
   return allUsers;
 }
 
+Future<List<UserModel>> getAllUsers() async {
+  CollectionReference usersCollection =
+      FirebaseFirestore.instance.collection('users');
+  QuerySnapshot users =
+      await usersCollection.get();
+  List<UserModel> allUsers = [];
+  if (users.docs.isNotEmpty) {
+    for (QueryDocumentSnapshot document in users.docs) {
+      Map<String, dynamic> user = document.data() as Map<String, dynamic>;
+      UserModel userData = UserModel.fromJson(user);
+      allUsers.add(userData);
+    }
+  }
+  return allUsers;
+}
+
 
 

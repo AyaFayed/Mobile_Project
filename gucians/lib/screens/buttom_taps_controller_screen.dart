@@ -36,7 +36,7 @@ class _ButtomTabsControllerScreenState
   bool showAddBtn() {
     switch (selectedTabIdx) {
       case 0:
-        if (UserInfoService.getUserType() == 'club') {
+        if (UserInfoService.getUserAttribute('type') == 'club') {
           return true;
         }
         break;
