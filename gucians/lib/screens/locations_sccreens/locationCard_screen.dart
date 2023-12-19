@@ -61,7 +61,8 @@ class LocationCard extends StatelessWidget {
               const Divider(
                 indent: 20,
               ),
-               ElevatedButton(onPressed: openMaps, child: const Text("open in maps"))
+              IconButton(onPressed: openMaps, icon: Icon(Icons.location_pin))
+              //  ElevatedButton(onPressed: openMaps, child: const Text("open in maps"))
             ],
           ),
         ),
