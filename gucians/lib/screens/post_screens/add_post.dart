@@ -37,10 +37,14 @@ class _AddPostState extends State<AddPost> {
   String error = '';
   String category='';
   bool anonymous = false;
+  bool uploading=false;
   List<String> tags = [];
+  
   void submitPost() {
     submitted = true;
+    
     if (_formKey.currentState!.validate()) {
+      uploading=true;
       addPost(_postField.text, false, category, image, tags).then((value) {
 
       Navigator.of(context).pop();

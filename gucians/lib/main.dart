@@ -55,12 +55,7 @@ class MainApp extends StatelessWidget {
         '/emergency':(context) => const EmergencyScreen(),
         '/add_post':(context) => const AddPost(),
 
-      },
-    
-      // home:  ButtomTabsControllerScreen()
-        // Center(
-        //   child: Text('Hello World!'),
-        // ),
+      }
       
     );
   }

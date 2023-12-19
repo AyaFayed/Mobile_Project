@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:gucians/screens/buttom_taps_controller_screen.dart';
 import 'package:gucians/screens/home.dart';
 import 'package:gucians/services/authentication_service.dart';
 import 'package:gucians/theme/colors.dart';
@@ -68,7 +69,7 @@ class _VerifyEmailState extends State<VerifyEmail> {
 
   @override
   Widget build(BuildContext context) => isEmailVerified
-      ? const Home()
+      ?  ButtomTabsControllerScreen()
       : Scaffold(
           appBar: AppBar(
             title: Text(
