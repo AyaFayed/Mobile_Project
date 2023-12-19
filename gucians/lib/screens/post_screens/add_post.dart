@@ -1,5 +1,7 @@
 import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:gucians/models/post_model.dart';
 import 'package:gucians/services/createpost_service.dart';
 import 'package:gucians/theme/colors.dart';
 import 'package:gucians/theme/sizes.dart';
@@ -14,7 +16,6 @@ class AddPost extends StatefulWidget {
 
 class _AddPostState extends State<AddPost> {
   XFile? image;
-
   final ImagePicker picker = ImagePicker();
 
   //we can upload image from camera or from gallery based on parameter
@@ -28,6 +29,7 @@ class _AddPostState extends State<AddPost> {
   void deleteImage() {
     setState(() {
       image = null;
+      if (oldPost!.file != "") oldPost!.file = "";
     });
   }
 
@@ -35,31 +37,66 @@ class _AddPostState extends State<AddPost> {
   final _formKey = GlobalKey<FormState>();
   bool submitted = false;
   String error = '';
-  String category='';
+  String category = '';
   bool anonymous = false;
-  bool uploading=false;
   List<String> tags = [];
-  
+  Post? oldPost;
   void submitPost() {
     submitted = true;
-    
     if (_formKey.currentState!.validate()) {
-      uploading=true;
-      addPost(_postField.text, false, category, image, tags).then((value) {
+      OverlayEntry overlayEntry;
 
-      Navigator.of(context).pop();
-      switch (category) {
-        case 'news':
-          Navigator.of(context).pushReplacementNamed('/',arguments: {'selectedIdx':0});
-        case 'question':
-          Navigator.of(context).pushReplacementNamed('/',arguments: {'selectedIdx':1});
-        case 'lost_and_found':
-          Navigator.of(context).pushReplacementNamed('/lost_and_found');
-          
-          break;
-        default:
+      overlayEntry = OverlayEntry(
+        builder: (context) => AbsorbPointer(
+          absorbing: true,
+          child: Material(
+            color: Colors.transparent,
+            child: Center(child: CircularProgressIndicator()),
+          ),
+        ),
+      );
+
+      Overlay.of(context).insert(overlayEntry);
+
+      if (oldPost != null) {
+        oldPost?.content = _postField.text;
+        editPost(oldPost!, image).then((value) {
+          Navigator.of(context).pop();
+          switch (oldPost!.category) {
+            case 'news':
+              Navigator.of(context)
+                  .pushReplacementNamed('/', arguments: {'selectedIdx': 0});
+            case 'question':
+              Navigator.of(context)
+                  .pushReplacementNamed('/', arguments: {'selectedIdx': 1});
+            case 'lost_and_found':
+              Navigator.of(context).pushReplacementNamed('/lost_and_found');
+
+              break;
+            default:
+          }
+          overlayEntry.remove();
+        });
+      } else {
+        print(category);
+        addPost(_postField.text, false, category, image, tags).then((value) {
+          Navigator.of(context).pop();
+          switch (category) {
+            case 'news':
+              Navigator.of(context)
+                  .pushReplacementNamed('/', arguments: {'selectedIdx': 0});
+            case 'question':
+              Navigator.of(context)
+                  .pushReplacementNamed('/', arguments: {'selectedIdx': 1});
+            case 'lost_and_found':
+              Navigator.of(context).pushReplacementNamed('/lost_and_found');
+
+              break;
+            default:
+          }
+          overlayEntry.remove();
+        });
       }
-      });
     }
   }
 
@@ -109,17 +146,39 @@ class _AddPostState extends State<AddPost> {
         });
   }
 
+  Future<String?> getImageURL(String path) async {
+    try {
+      Reference ref = FirebaseStorage.instance
+          .ref()
+          .child(path); // Replace with your image path
+      String x = await ref.getDownloadURL();
+      print("object");
+      return x;
+    } catch (e) {
+      print('Error fetching image URL: $e');
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-if(ModalRoute.of(context)!.settings.arguments!=null){
-      final x=ModalRoute.of(context)!.settings.arguments as Map<String,dynamic>;
-      if(x['category']!=null){
-        category=x['category']!;
+    if (ModalRoute.of(context)!.settings.arguments != null) {
+      final routeArgs =
+          ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+      oldPost = routeArgs['post'];
+      if (routeArgs['category'] != null) {
+        category = routeArgs['category'];
+      }
+
+      print("object");
+      if (oldPost != null) {
+        _postField.text = oldPost!.content;
       }
     }
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Add Post"),
+        title:
+            oldPost == null ? const Text("Add Post") : const Text("Edit Post"),
       ),
       body: Container(
         margin: const EdgeInsets.only(left: 30, right: 30, top: 15),
@@ -202,46 +261,100 @@ if(ModalRoute.of(context)!.settings.arguments!=null){
                     ),
                   ],
                 ),
-                image != null
-                    ? Row(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.file(
-                                File(image!.path),
-                                fit: BoxFit.cover,
-                                width: 250,
-                                height: 250,
+                if (image != null)
+                  Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.file(
+                            File(image!.path),
+                            fit: BoxFit.cover,
+                            width: 250,
+                            height: 250,
+                          ),
+                        ),
+                      ),
+                      Flexible(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            deleteImage();
+                          },
+                          style: ButtonStyle(
+                            maximumSize:
+                                MaterialStateProperty.all(Size(80, 50)),
+                            shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                    20.0), // Set the border radius
                               ),
                             ),
                           ),
-                          Flexible(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                deleteImage();
+                          child: const Icon(Icons.clear),
+                        ),
+                      ),
+                    ],
+                  )
+                else if (oldPost != null &&
+                    oldPost!.file != null &&
+                    oldPost!.file != "")
+                  Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: FutureBuilder(
+                              future: getImageURL(
+                                  oldPost!.file!), // Fetch the image URL
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return const CircularProgressIndicator(); // Display a loading indicator while fetching the image
+                                } else if (snapshot.hasError) {
+                                  return Text('Error: ${snapshot.error}');
+                                } else if (!snapshot.hasData ||
+                                    snapshot.data == null) {
+                                  return const Text('No Image');
+                                } else {
+                                  print(snapshot.data);
+                                  return Image.network(
+                                    snapshot.data.toString(),
+                                    height: 250,
+                                    width: 250,
+                                  ); // Display the image using the retrieved URL
+                                }
                               },
-                              style: ButtonStyle(
-                                maximumSize:
-                                    MaterialStateProperty.all(Size(80, 50)),
-                                shape: MaterialStateProperty.all<
-                                    RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(
-                                        20.0), // Set the border radius
-                                  ),
-                                ),
+                            )),
+                      ),
+                      Flexible(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            deleteImage();
+                          },
+                          style: ButtonStyle(
+                            maximumSize:
+                                MaterialStateProperty.all(Size(80, 50)),
+                            shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                    20.0), // Set the border radius
                               ),
-                              child: const Icon(Icons.clear),
                             ),
                           ),
-                        ],
-                      )
-                    : const Text(
-                        "No Image",
-                        style: TextStyle(fontSize: 20),
-                      )
+                          child: const Icon(Icons.clear),
+                        ),
+                      ),
+                    ],
+                  )
+                else
+                  const Text(
+                    "No Image",
+                    style: TextStyle(fontSize: 20),
+                  )
               ],
             ),
           ),

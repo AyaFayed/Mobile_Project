@@ -19,6 +19,7 @@ class _NotificationsState extends State<Notifications> {
   List<NotificationDisplay>? _notifications;
 
   Future<void> _getData() async {
+    print("get data");
     List<NotificationDisplay> notifications =
         await _notificationController.getMyNotifications();
 
@@ -29,6 +30,7 @@ class _NotificationsState extends State<Notifications> {
 
   @override
   void initState() {
+    print("in initstate");
     super.initState();
     _getData();
   }

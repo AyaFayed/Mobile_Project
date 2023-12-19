@@ -183,6 +183,9 @@ class _ReadPostCardState extends State<ReadPostCard> {
                                 );
                               },
                             );
+                          } else if (result == "Modify") {
+                            Navigator.pushNamed(context, ('/add_post'),
+                                arguments: {'post': widget.post});
                           }
                           // Perform an action based on the selected item
                         },
@@ -486,8 +489,7 @@ class _commentsComponentState extends State<commentsComponent> {
                             anonymous: widget.category == 'confession' &&
                                 widget.anonymous,
                             path: comments[index].authorImgUrl,
-                          )
-                              ),
+                          )),
                           title: Container(
                               padding: const EdgeInsets.all(5),
                               decoration: BoxDecoration(

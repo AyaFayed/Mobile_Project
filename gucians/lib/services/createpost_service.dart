@@ -6,13 +6,17 @@ import 'package:gucians/models/post_model.dart';
 import 'package:gucians/services/hashing_service.dart';
 import 'package:gucians/services/user_info_service.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:gucians/common/enums/notification_type_enum.dart';
+import 'package:gucians/controllers/notification_controller.dart';
 
-Future<void> addPost(String content, bool anonymous, String category, XFile? image,
-    List<String> tags) async{
+Future<void> addPost(String content, bool anonymous, String category,
+    XFile? image, List<String> tags) async {
+  final NotificationController _notificationController =
+      NotificationController();
   CollectionReference posts = FirebaseFirestore.instance.collection('posts');
   String? imageUrl;
-  if(image != null) {
-     imageUrl = await getImageUrl(image);
+  if (image != null) {
+    imageUrl = await getImageUrl(image);
   }
   String authorId = UserInfoService.getCurrentUserId();
   // check to hash the id before adding the author_id
@@ -32,10 +36,21 @@ Future<void> addPost(String content, bool anonymous, String category, XFile? ima
     category: category,
     createdAt: DateTime.now(),
   );
-  posts
-      .add(post.toJson())
-      .then((value) => print('Document added with ID: ${value.id}'))
-      .catchError((error) => print('Failed to add document: $error'));
+  posts.add(post.toJson()).then((value) {
+    print('Document added with ID: ${value.id}');
+
+    switch (category) {
+      case 'news':
+        _notificationController.createNewsNotification("New Club Announcement",
+            "body of the club announcement", value.id, NotificationType.news);
+        break;
+      case 'lost_and_found':
+        print("notification should be sent");
+        _notificationController.createLostAndFoundNotification(
+            'New L&F Post', 'body', value.id, NotificationType.lostAndFound);
+        break;
+    }
+  }).catchError((error) => print('Failed to add document: $error'));
 }
 
 Future<String?> getImageUrl(XFile imageFile) async {
@@ -53,4 +68,17 @@ Future<String?> getImageUrl(XFile imageFile) async {
     print('Failed to upload image: $error');
     return null;
   }
+}
+
+Future<void> editPost(Post post, XFile? newImage) async {
+  CollectionReference posts = FirebaseFirestore.instance.collection('posts');
+  if (newImage != null) {
+    String? imageUrl = await getImageUrl(newImage);
+    post.file = imageUrl;
+  }
+  posts.doc(post.id).update(post.toJson()).then((value) {
+    print('Document with ID ${post.id} successfully updated.');
+  }).catchError((error) {
+    print('Failed to update document: $error');
+  });
 }
