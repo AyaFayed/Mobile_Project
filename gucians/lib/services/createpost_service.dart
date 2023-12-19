@@ -51,14 +51,17 @@ Future<String> addPost(String content, bool anonymous, String category,
         case 'news':
           await _notificationController.createNewsNotification(
               "New Club Announcement",
-              "body of the club announcement",
+              "New club announcement was added.",
               value.id,
               NotificationType.news);
           break;
         case 'lost_and_found':
           print("notification should be sent");
           await _notificationController.createLostAndFoundNotification(
-              'New L&F Post', 'body', value.id, NotificationType.lostAndFound);
+              'Gucians',
+              'New Lost and Found Post was added.',
+              value.id,
+              NotificationType.lostAndFound);
           break;
       }
     } catch (error) {
