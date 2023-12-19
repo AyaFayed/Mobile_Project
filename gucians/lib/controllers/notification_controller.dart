@@ -15,13 +15,8 @@ class NotificationController {
   final UserWrites _userWrites = UserWrites();
   final NotificationReads _notificationReads = NotificationReads();
 
-  Future createNotification(
-      List<String> userIds,
-      String? courseName,
-      String title,
-      String body,
-      String postId,
-      NotificationType notificationType) async {
+  Future createNotification(List<String> userIds, String title, String body,
+      String postId, NotificationType notificationType) async {
     final docNotification = DatabaseReferences.notifications.doc();
 
     final notification = NotificationModel(
@@ -51,7 +46,29 @@ class NotificationController {
       }
     }
 
+    await _user.notifyUsers(userIds, title, body);
     await Future.wait(updates);
+  }
+
+  Future createNotificationForAsingleUser(String userId, String title,
+      String body, String postId, NotificationType notificationType) async {
+    await createNotification([userId], title, body, postId, notificationType);
+  }
+
+  Future createLostAndFoundNotification(String title, String body,
+      String postId, NotificationType notificationType) async {
+    List<UserModel> users =
+        await _userReads.getAllUsersWithAllowedLostAndFoundNotification();
+    await createNotification(users.map((user) => user.id).toList(), title, body,
+        postId, notificationType);
+  }
+
+  Future createNewsNotification(String title, String body, String postId,
+      NotificationType notificationType) async {
+    List<UserModel> users =
+        await _userReads.getAllUsersWithAllowedNewsNotification();
+    await createNotification(users.map((user) => user.id).toList(), title, body,
+        postId, notificationType);
   }
 
   Future markNotificationAsSeen(String notificationId) async {
