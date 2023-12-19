@@ -54,7 +54,8 @@ class UserModel {
       photoUrl: json['photoUrl'],
       type: json['type'],
       roomLocationId: json['roomLocationId'],
-      ratings: (json['ratings'] as Map<String, dynamic>).cast<String, double>(),
+      ratings: ((json['ratings'] ?? {}) as Map<dynamic, dynamic>)
+          .cast<String, double>(),
       tokens: (json['tokens'] as List<dynamic>).cast<String>(),
       allowNewsNotifications: json['allowNewsNotifications'],
       allowLostAndFoundNotifications: json['allowLostAndFoundNotifications'],

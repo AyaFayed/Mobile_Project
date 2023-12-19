@@ -43,12 +43,13 @@ Future<String> addPost(String content, bool anonymous, String category,
   );
   ApiResponse response = await perspectiveAPI.sendRequest(content);
   if (response.success && response.clean) {
-    posts.add(post.toJson()).then((value) {
+    try {
+      var value = await posts.add(post.toJson());
       print('Document added with ID: ${value.id}');
 
       switch (category) {
         case 'news':
-          _notificationController.createNewsNotification(
+          await _notificationController.createNewsNotification(
               "New Club Announcement",
               "body of the club announcement",
               value.id,
@@ -56,11 +57,14 @@ Future<String> addPost(String content, bool anonymous, String category,
           break;
         case 'lost_and_found':
           print("notification should be sent");
-          _notificationController.createLostAndFoundNotification(
+          await _notificationController.createLostAndFoundNotification(
               'New L&F Post', 'body', value.id, NotificationType.lostAndFound);
           break;
       }
-    }).catchError((error) => print('Failed to add document: $error'));
+    } catch (error) {
+      print('Failed to add document: $error');
+    }
+
     return 'clean';
   } else {
     if (response.success && !response.clean) {
