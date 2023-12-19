@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:gucians/models/emergency_num.dart';
+import 'package:gucians/theme/colors.dart';
 
 // ignore: must_be_immutable, camel_case_types
 class EmergencyNumberCard extends StatelessWidget {
@@ -19,6 +20,9 @@ class EmergencyNumberCard extends StatelessWidget {
         title: Text(number.name),
         subtitle: Text(number.number),
         trailing: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+              foregroundColor: AppColors.light,
+              backgroundColor: AppColors.dark),
           onPressed: callNumber,
           child: const Text("Call"),
         ),

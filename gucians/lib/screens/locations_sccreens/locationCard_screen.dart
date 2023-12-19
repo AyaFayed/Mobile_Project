@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gucians/models/location_model.dart';
+import 'package:gucians/theme/colors.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 // ignore: must_be_immutable
@@ -49,6 +50,7 @@ class LocationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: AppColors.light,
       child: ListTile(
         title: Text(location.name),
         trailing: SizedBox(
@@ -57,11 +59,23 @@ class LocationCard extends StatelessWidget {
             children: [
               ElevatedButton(
                   onPressed: () => openLocation(context),
+                  style: ElevatedButton.styleFrom(
+                      foregroundColor: AppColors.light,
+                      backgroundColor: AppColors.dark),
                   child: const Text("Location")),
               const Divider(
                 indent: 20,
               ),
-               ElevatedButton(onPressed: openMaps, child: const Text("open in maps"))
+              ElevatedButton(
+                onPressed: openMaps,
+                style: ElevatedButton.styleFrom(
+                    foregroundColor: AppColors.light,
+                    backgroundColor: AppColors.dark),
+                child: Text(
+                  "open in maps",
+                  style: TextStyle(color: AppColors.light),
+                ),
+              )
             ],
           ),
         ),

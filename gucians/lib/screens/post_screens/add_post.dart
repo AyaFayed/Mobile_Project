@@ -220,8 +220,16 @@ class _AddPostState extends State<AddPost> {
     }
     return Scaffold(
       appBar: AppBar(
-        title:
-            oldPost == null ? const Text("Add Post") : const Text("Edit Post"),
+        title: oldPost == null
+            ? Text("Add Post",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, color: AppColors.light))
+            : Text(
+                "Edit Post",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, color: AppColors.light),
+              ),
+        backgroundColor: AppColors.primary,
       ),
       body: Container(
         margin: const EdgeInsets.only(left: 30, right: 30, top: 15),
@@ -264,44 +272,48 @@ class _AddPostState extends State<AddPost> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     ElevatedButton(
-                      onPressed: () {
-                        myAlert();
-                      },
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(
-                            AppColors.secondary),
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                20.0), // Set the border radius
+                        onPressed: () {
+                          myAlert();
+                        },
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                              AppColors.secondary),
+                          shape:
+                              MaterialStateProperty.all<RoundedRectangleBorder>(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                  20.0), // Set the border radius
+                            ),
                           ),
                         ),
-                      ),
-                      child: const Text('Add photo'),
-                    ),
+                        child: Text(
+                          'Add photo',
+                          style: TextStyle(color: AppColors.dark),
+                        )),
                   ],
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     ElevatedButton(
-                      onPressed: () {
-                        submitPost();
-                      },
-                      style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all<Color>(AppColors.confirm),
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                20.0), // Set the border radius
+                        onPressed: () {
+                          submitPost();
+                        },
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                              AppColors.confirm),
+                          shape:
+                              MaterialStateProperty.all<RoundedRectangleBorder>(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                  20.0), // Set the border radius
+                            ),
                           ),
                         ),
-                      ),
-                      child: const Text('Post'),
-                    ),
+                        child: Text(
+                          'Post',
+                          style: TextStyle(color: AppColors.light),
+                        )),
                   ],
                 ),
                 if (image != null)

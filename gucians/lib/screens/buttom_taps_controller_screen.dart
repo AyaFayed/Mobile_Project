@@ -66,12 +66,17 @@ class _ButtomTabsControllerScreenState
         leading: Builder(builder: (context) {
           return IconButton(
             icon: const Icon(Icons.menu),
+            color: AppColors.light,
             onPressed: () {
               Scaffold.of(context).openDrawer();
             },
           );
         }),
-        title: Text(myTitles[selectedTabIdx]),
+        title: Text(
+          myTitles[selectedTabIdx],
+          style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.light),
+        ),
+        backgroundColor: AppColors.primary,
         actions: [
           if (showAddBtn())
             IconButton(
@@ -92,7 +97,10 @@ class _ButtomTabsControllerScreenState
                     default:
                   }
                 },
-                icon: Icon(Icons.add))
+                icon: Icon(
+                  Icons.add,
+                  color: AppColors.light,
+                ))
         ],
       ),
       drawer: MainDrawer(),

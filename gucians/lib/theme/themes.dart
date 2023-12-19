@@ -7,7 +7,7 @@ class CustomTheme {
         fontFamily: 'Poppins',
         colorScheme: ColorScheme(
             brightness: Brightness.light,
-            primary: AppColors.primary,
+            primary: Colors.grey,
             onPrimary: Colors.white,
             secondary: AppColors.secondary,
             onSecondary: Colors.white,

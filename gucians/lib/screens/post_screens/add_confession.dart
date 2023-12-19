@@ -22,7 +22,8 @@ class _AddConfessionState extends State<AddConfession> {
     if (_formKey.currentState!.validate()) {
       addPost(_postField.text, anonymous, 'confession', null, tags);
       Navigator.of(context).pop();
-      Navigator.of(context).pushReplacementNamed('/',arguments: {'selectedIdx':2});
+      Navigator.of(context)
+          .pushReplacementNamed('/', arguments: {'selectedIdx': 2});
     }
   }
 
@@ -30,7 +31,11 @@ class _AddConfessionState extends State<AddConfession> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Add Confession"),
+        title: Text(
+          "Add Confession",
+          style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.light),
+        ),
+        backgroundColor: AppColors.primary,
       ),
       body: Container(
         margin: const EdgeInsets.only(left: 30, right: 30, top: 15),
@@ -106,7 +111,10 @@ class _AddConfessionState extends State<AddConfession> {
                           ),
                         ),
                       ),
-                      child: const Text('Confess'),
+                      child: Text(
+                        'Confess',
+                        style: TextStyle(color: AppColors.light),
+                      ),
                     ),
                   ],
                 )

@@ -63,7 +63,11 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Emergency numbers"),
+        title: Text(
+          "Emergency numbers",
+          style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.light),
+        ),
+        backgroundColor: AppColors.primary,
       ),
       body: Column(
         children: [

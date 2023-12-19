@@ -115,7 +115,11 @@ class _StaffProfileState extends State<StaffProfile> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Professor's profile"),
+        title: Text(
+          "Professor's profile",
+          style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.light),
+        ),
+        backgroundColor: AppColors.primary,
       ),
       body: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -209,7 +213,7 @@ class _StaffProfileState extends State<StaffProfile> {
                           const SizedBox(
                               width: 5), // Add space between rating and text
                           Text(
-                            "${widget.user.ratings!.isEmpty?'0':(getSumRates() / widget.user.ratings!.length).toStringAsFixed(1)} (${widget.user.ratings!.length})",
+                            "${widget.user.ratings!.isEmpty ? '0' : (getSumRates() / widget.user.ratings!.length).toStringAsFixed(1)} (${widget.user.ratings!.length})",
                             style: const TextStyle(
                               fontSize: 14,
                               color: Colors.grey,

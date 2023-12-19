@@ -52,7 +52,11 @@ class _LocationsScreenState extends State<LocationsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Offices & Outlets"),
+        title: Text(
+          "Offices & Outlets",
+          style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.light),
+        ),
+        backgroundColor: AppColors.primary,
       ),
       body: Column(
         // children: [

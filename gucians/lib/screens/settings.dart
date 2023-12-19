@@ -66,6 +66,7 @@ class _SettingsState extends State<Settings> {
                           height: 20,
                         ),
                         SwitchListTile(
+                            activeTrackColor: AppColors.primary,
                             contentPadding: const EdgeInsets.symmetric(
                                 vertical: 0, horizontal: 0),
                             title: Text(
@@ -81,6 +82,7 @@ class _SettingsState extends State<Settings> {
                           height: 10,
                         ),
                         SwitchListTile(
+                            activeTrackColor: AppColors.primary,
                             contentPadding: const EdgeInsets.symmetric(
                                 vertical: 0, horizontal: 0),
                             title: Text(

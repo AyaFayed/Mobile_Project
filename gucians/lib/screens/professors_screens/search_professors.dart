@@ -62,7 +62,11 @@ class _ProfessorRatingListState extends State<ProfessorRatingList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Professors Rating"),
+        title: Text(
+          "Professors Rating",
+          style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.light),
+        ),
+        backgroundColor: AppColors.primary,
       ),
       body: Column(
         children: [
