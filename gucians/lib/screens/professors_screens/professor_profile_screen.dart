@@ -244,15 +244,7 @@ class _StaffProfileState extends State<StaffProfile> {
           ),
         ],
       ),
-      floatingActionButton: floating
-          ? FloatingActionButton(
-              onPressed: () {
-                _showRatingDialog();
-              },
-              tooltip: 'Add Rating',
-              child: const Icon(Icons.add),
-            )
-          : null,
+      
     );
   }
 }

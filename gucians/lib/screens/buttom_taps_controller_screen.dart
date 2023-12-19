@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:gucians/screens/main_drawer.dart';
+import 'package:gucians/services/authentication_service.dart';
+import 'package:gucians/services/messaging_service.dart';
+import 'package:gucians/services/notification_service.dart';
 import 'package:gucians/services/user_info_service.dart';
 import 'package:gucians/theme/colors.dart';
 import 'package:gucians/widgets/posts_by_category.dart';
@@ -14,6 +17,18 @@ class ButtomTabsControllerScreen extends StatefulWidget {
 
 class _ButtomTabsControllerScreenState
     extends State<ButtomTabsControllerScreen> {
+  final AuthService _auth = AuthService();
+  final MessagingService _messaging = MessagingService();
+  final NotificationService _notificationService = NotificationService();
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _messaging.requestPermission();
+    _messaging.setToken();
+    _notificationService.initInfo();
+  }
+
   final myPages = [
     const PostsByCategory(category: 'news'),
     const PostsByCategory(category: 'question'),
@@ -105,10 +120,35 @@ class _ButtomTabsControllerScreenState
                 ))
         ],
       ),
+      floatingActionButton: showAddBtn() ? FloatingActionButton(
+              onPressed: () {
+                switch (selectedTabIdx) {
+                  case 2:
+                    Navigator.of(context).pushNamed('/add_confession');
+                    break;
+                  case 0:
+                    Navigator.of(context).pushNamed('/add_post',
+                        arguments: {'category': 'news'});
+                    break;
+                  case 1:
+                    Navigator.of(context).pushNamed('/add_post',
+                        arguments: {'category': 'question'});
+                    break;
+
+                  default:
+                }
+              },
+              tooltip: 'Add Rating',
+              child: const Icon(Icons.add),
+            ) : null,
       drawer: MainDrawer(),
       resizeToAvoidBottomInset: true,
       body: myPages[selectedTabIdx],
       bottomNavigationBar: BottomNavigationBar(
+        selectedItemColor: Colors.black,
+        // selectedLabelStyle: TextStyle(color: Colors.black),
+        // unselectedLabelStyle: TextStyle(color: Colors.black),
+        // unselectedLabelStyle: ,
         // backgroundColor: Colors.amber,
         items: [
           BottomNavigationBarItem(

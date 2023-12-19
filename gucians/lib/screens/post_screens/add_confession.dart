@@ -128,57 +128,25 @@ class _AddConfessionState extends State<AddConfession> {
                 const SizedBox(
                     height: 16.0), // Adding space between text field and button
                 // Button to post
-                Row(
-                  // mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Container(
-                      width: 150,
-                      child: SearchBar(
-                        controller: tagsCtrl,
-                        leading: Container(
-                          margin: const EdgeInsets.only(left: 10),
-                          child: const Icon(Icons.search),
-                        ),
-                        hintText: '@handle',
-                        overlayColor:
-                            MaterialStateProperty.all(AppColors.lightGrey),
-                        // trailing: [
-                        //   if (tagsCtrl.text.isNotEmpty)
-                        //     TextButton(
-                        //         onPressed: () => filterUsersList(""),
-                        //         child: const Icon(
-                        //           Icons.clear,
-                        //           color: Colors.black,
-                        //         ))
-                        // ],
-                        onChanged: (String value) {
-                          filterUsersList(value);
-                        },
+                ElevatedButton(
+                  onPressed: () {
+                    submitPost();
+                  },
+                  style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.black87),
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(
+                            20.0), // Set the border radius
                       ),
                     ),
-                    Spacer(),
-                    ElevatedButton(
-                      onPressed: () {
-                        submitPost();
-                      },
-                      style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all<Color>(Colors.black87),
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                20.0), // Set the border radius
-                          ),
-                        ),
-                      ),
-                      child: Text(
-                        'Confess',
-                        style: TextStyle(color: AppColors.light),
-                      ),
-                    ),
-                  ],
-                )
+                  ),
+                  child: Text(
+                    'Confess',
+                    style: TextStyle(color: AppColors.light),
+                  ),
+                ),
               ],
             ),
           ),
