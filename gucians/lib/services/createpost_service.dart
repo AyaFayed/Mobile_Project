@@ -25,6 +25,8 @@ Future<String> addPost(String content, bool anonymous, String category,
   if (anonymous) {
     authorId = Hashing.hash(authorId);
   }
+  bool approved = true;
+  if (category == "confession") approved = false;
   Post post = Post(
     anonymous: anonymous,
     content: content,
@@ -36,6 +38,7 @@ Future<String> addPost(String content, bool anonymous, String category,
     authorId: authorId,
     reporters: [],
     category: category,
+    approved: approved,
     createdAt: DateTime.now(),
   );
   ApiResponse response = await perspectiveAPI.sendRequest(content);
