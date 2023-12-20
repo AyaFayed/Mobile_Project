@@ -13,18 +13,16 @@ class UserInfoService {
     return 'OZ0B6Owm05aVaYjEBynWHqJRYkf1';
   }
 
-  static Future<String> getUserAttribute(String att)async{
-    String id=getCurrentUserId();
+  static Future<String> getUserAttribute(String att) async {
+    String id = getCurrentUserId();
     final firestore = FirebaseFirestore.instance;
-    DocumentSnapshot<Map<String, dynamic>> snapshot=await firestore.collection('users').doc(id).get();
+    DocumentSnapshot<Map<String, dynamic>> snapshot =
+        await firestore.collection('users').doc(id).get();
     if (snapshot.exists) {
-        return snapshot.data()![att]??'';
-      }
-      else{
-        return att;
-      }
+      String x = snapshot.data()![att] ?? '';
+      return x;
+    } else {
+      return att;
+    }
   }
-
-
-  
 }

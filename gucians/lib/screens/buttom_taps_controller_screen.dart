@@ -20,6 +20,7 @@ class _ButtomTabsControllerScreenState
   final AuthService _auth = AuthService();
   final MessagingService _messaging = MessagingService();
   final NotificationService _notificationService = NotificationService();
+  bool isClub = false;
   @override
   void initState() {
     // TODO: implement initState
@@ -27,6 +28,13 @@ class _ButtomTabsControllerScreenState
     _messaging.requestPermission();
     _messaging.setToken();
     _notificationService.initInfo();
+    UserInfoService.getUserAttribute('type').then((value) {
+      print(value);
+      isClub = (value == 'club');
+    }).catchError((err) {
+      print("//////////////////////////////////////////////////" +
+          err.toString());
+    });
   }
 
   final myPages = [
@@ -52,7 +60,7 @@ class _ButtomTabsControllerScreenState
   bool showAddBtn() {
     switch (selectedTabIdx) {
       case 0:
-        if (UserInfoService.getUserAttribute('type') == 'club') {
+        if (isClub) {
           return true;
         }
         break;
@@ -120,7 +128,8 @@ class _ButtomTabsControllerScreenState
                 ))
         ],
       ),
-      floatingActionButton: showAddBtn() ? FloatingActionButton(
+      floatingActionButton: showAddBtn()
+          ? FloatingActionButton(
               onPressed: () {
                 switch (selectedTabIdx) {
                   case 2:
@@ -140,7 +149,8 @@ class _ButtomTabsControllerScreenState
               },
               tooltip: 'Add Rating',
               child: const Icon(Icons.add),
-            ) : null,
+            )
+          : null,
       drawer: MainDrawer(),
       resizeToAvoidBottomInset: true,
       body: myPages[selectedTabIdx],

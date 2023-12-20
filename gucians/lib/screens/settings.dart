@@ -22,6 +22,7 @@ class _SettingsState extends State<Settings> {
   final UserController _userController = UserController();
   UserModel? _currentUser;
   XFile? image;
+  String txt = '';
   final ImagePicker picker = ImagePicker();
 
   Future getImage(ImageSource media) async {
@@ -30,6 +31,7 @@ class _SettingsState extends State<Settings> {
     await _userController.updatePhoto(imgUrl!);
     setState(() {
       image = img;
+      txt = 'Profile photo changed successfully.';
     });
   }
 
@@ -50,7 +52,7 @@ class _SettingsState extends State<Settings> {
     }
   }
 
-  void myAlert() {
+  Future<void> myAlert() async {
     showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -64,9 +66,9 @@ class _SettingsState extends State<Settings> {
                 children: [
                   ElevatedButton(
                     //if user click this button, user can upload image from gallery
-                    onPressed: () {
+                    onPressed: () async {
                       Navigator.pop(context);
-                      getImage(ImageSource.gallery);
+                      await getImage(ImageSource.gallery);
                     },
                     child: const Row(
                       children: [
@@ -77,9 +79,9 @@ class _SettingsState extends State<Settings> {
                   ),
                   ElevatedButton(
                     //if user click this button. user can upload image from camera
-                    onPressed: () {
+                    onPressed: () async {
                       Navigator.pop(context);
-                      getImage(ImageSource.camera);
+                      await getImage(ImageSource.camera);
                     },
                     child: const Row(
                       children: [
@@ -178,10 +180,19 @@ class _SettingsState extends State<Settings> {
                         ),
                         LargeBtn(
                           onPressed: () async {
-                            myAlert();
+                            await myAlert();
                           },
                           text: 'Add profile photo',
                           color: AppColors.dark,
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          txt,
+                          style: TextStyle(
+                              fontSize: Sizes.smaller, color: AppColors.dark),
+                          textAlign: TextAlign.center,
                         ),
                         const SizedBox(
                           height: 30,
