@@ -37,7 +37,7 @@ class _StaffProfileState extends State<StaffProfile> {
 
   void addRating(double newRating) {
     curRate = newRating;
-    widget.user.ratings![UserInfoService.getCurrentUserId()] =
+    widget.user.ratings![getCurrentUserId()] =
         newRating.toDouble();
     updateRatings(widget.user.ratings!);
     setState(() {
@@ -57,8 +57,8 @@ class _StaffProfileState extends State<StaffProfile> {
   @override
   void initState() {
     // TODO: implement initState
-    if (widget.user.ratings!.containsKey(UserInfoService.getCurrentUserId())) {
-      curRate = widget.user.ratings![UserInfoService.getCurrentUserId()] ?? 0;
+    if (widget.user.ratings!.containsKey(getCurrentUserId())) {
+      curRate = widget.user.ratings![getCurrentUserId()] ?? 0;
     }
     super.initState();
   }

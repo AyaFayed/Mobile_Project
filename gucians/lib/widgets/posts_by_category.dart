@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gucians/models/non_database_models/user_to_post.dart';
-import 'package:gucians/models/post_model.dart';
 import 'package:gucians/models/user_model.dart';
+import 'package:gucians/services/post_database_services.dart';
 import 'package:gucians/services/user_info_service.dart';
 import 'package:gucians/widgets/read_post_card.dart';
 
@@ -24,67 +23,20 @@ class _PostsByCategoryState extends State<PostsByCategory> {
     final idx = posts.indexWhere((element) => element.id == idToDelete);
     posts.removeAt(idx);
     users.removeAt(idx);
-    try {
-      FirebaseFirestore firestore = FirebaseFirestore.instance;
-      await firestore.collection('posts').doc(idToDelete).delete();
-      print('post deleted successfully.');
-    } catch (e) {
-      print('Error deleting post: $e');
-    }
+    deletePostInDB(idToDelete);
     setState(() {});
   }
 
-  Future<void> getPosts() async {
-    final List<Post> fetchedPosts = [];
-    final List<UserModel> fetchedUsers = [];
-    final firestore = FirebaseFirestore.instance;
-
-    print('///////////////////////////////////');
-    print(widget.category);
-    final QuerySnapshot<Map<String, dynamic>> querySnapshotPosts =
-        await firestore
-            .collection('posts')
-            .where('category', isEqualTo: widget.category)
-            .where('approved', isEqualTo: true)
-            .get();
-
-    for (var doc in querySnapshotPosts.docs) {
-      fetchedPosts.add(Post.fromJson(doc.data(), doc.id));
-    }
-    fetchedPosts.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-    final List<DocumentSnapshot<Map<String, dynamic>>> snapshots =
-        await Future.wait(fetchedPosts.map(
-      (post) => firestore.collection('users').doc(post.authorId).get(),
-    ));
-
-    for (var snapshot in snapshots) {
-      if (snapshot.exists) {
-        fetchedUsers.add(UserModel.fromJson(snapshot.data()!));
-      } else {
-        fetchedUsers.add(UserModel(
-            id: 'id',
-            name: 'name',
-            email: 'email',
-            handle: 'handle',
-            type: 'type',
-            tokens: [],
-            allowNewsNotifications: false,
-            userNotifications: [],
-            allowLostAndFoundNotifications: false));
-      }
-    }
+  Future<void> getPostsAndOwners() async {
+    final fetchedPosts = await fetchPosts(widget.category);
+    final List<UserModel> fetchedUsers = await fetchUsers(fetchedPosts);
 
     setState(() {
-      print("UnBlock ${widget.category}");
-      getCurrentUserId();
+      userId = getCurrentUserId();
       loading = false;
       posts = fetchedPosts;
       users = fetchedUsers;
     });
-  }
-
-  void getCurrentUserId() {
-    userId = UserInfoService.getCurrentUserId();
   }
 
   @override
@@ -92,8 +44,7 @@ class _PostsByCategoryState extends State<PostsByCategory> {
     loading = true;
     posts = [];
     users = [];
-
-    getPosts();
+    getPostsAndOwners();
     super.initState();
 
     // loading=true;
@@ -109,19 +60,17 @@ class _PostsByCategoryState extends State<PostsByCategory> {
         posts.clear(); // Clear previous posts
         users.clear(); // Clear previous users
       });
-      getPosts(); // Fetch new posts for the updated category
+      getPostsAndOwners(); // Fetch new posts for the updated category
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    print("Building for ${widget.category} +++++++++++++++++++++++++++++");
-    print(posts);
     return loading
         ? const Center(child: CircularProgressIndicator())
-        : posts.length == 0
+        : posts.isEmpty
             ? Center(
-                child: Text('No Posts to display'),
+                child: Text('No ${widget.category} to display'),
               )
             : ListView.builder(
                 itemCount: posts.length,
@@ -132,7 +81,7 @@ class _PostsByCategoryState extends State<PostsByCategory> {
                       post: posts[index],
                       owner: users[index],
                       userToPost: userToPost,
-                      func: deletePost);
+                      deletePostFunc: deletePost);
                 },
               );
   }

@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:gucians/database/database_references.dart';
 import 'package:gucians/models/comment_model.dart';
 import 'package:gucians/models/non_database_models/user_to_post.dart';
 import 'package:gucians/models/user_model.dart';
+import 'package:gucians/services/post_database_services.dart';
 import 'package:gucians/services/user_info_service.dart';
 import 'package:gucians/theme/colors.dart';
 import 'package:gucians/widgets/user_img.dart';
@@ -15,68 +16,19 @@ class ReadPostCard extends StatefulWidget {
   final Post post;
   final UserModel owner;
   UserToPost userToPost;
-  Function func;
-  // var comments=post.commentIds;
+  Function deletePostFunc;
   ReadPostCard(
       {super.key,
       required this.post,
       required this.owner,
       required this.userToPost,
-      required this.func});
+      required this.deletePostFunc});
 
   @override
   State<ReadPostCard> createState() => _ReadPostCardState();
 }
 
 class _ReadPostCardState extends State<ReadPostCard> {
-  final commentController = TextEditingController();
-
-  static String getTime(DateTime createdAt) {
-    DateTime now = DateTime.now();
-    Duration difference = now.difference(createdAt);
-    int days = difference.inDays;
-    int hours = difference.inHours;
-    int minutes = difference.inMinutes;
-    int months = (days ~/ 30);
-    int years = (months ~/ 12);
-    if (years > 0) return "${years}y ago";
-    if (months > 0) return "${months}mo ago";
-    if (days > 0) return "${days}days ago";
-    if (hours > 0) return "${hours}h ago";
-    if (minutes > 0) return "${minutes}min ago";
-    return "few seconds ago";
-  }
-
-  Future<String?> getImageURL(String path) async {
-    print('*************************************');
-    print(path);
-    try {
-      print(widget.owner.photoUrl);
-      Reference ref = FirebaseStorage.instance
-          .ref()
-          .child(path); // Replace with your image path
-      String x = await ref.getDownloadURL();
-      return x;
-    } catch (e) {
-      print('Error fetching image URL: $e');
-      return null;
-    }
-  }
-
-  Future<void> updateReporting(String postId, dynamic reporters) async {
-    try {
-      DocumentReference postRef =
-          FirebaseFirestore.instance.collection('posts').doc(postId);
-      await postRef.update({
-        'reporters': reporters,
-      });
-
-      print('Reporting updated successfully!');
-    } catch (e) {
-      print('Error updating Reporting: $e');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -107,7 +59,6 @@ class _ReadPostCardState extends State<ReadPostCard> {
                         } else if (!snapshot.hasData || snapshot.data == null) {
                           return const Text('No Image');
                         } else {
-                          print(snapshot.data);
                           return Image.network(
                             snapshot.data.toString(),
                             height: 45,
@@ -116,46 +67,32 @@ class _ReadPostCardState extends State<ReadPostCard> {
                         }
                       },
                     ),
-                    // Image.asset(
-                    //   'lib/icons/AYB.jpg', // Replace with your image URL
-                    //   width: 45, // Set the desired width
-                    //   height: 45, // Set the desired height
-                    //   fit: BoxFit
-                    //       .cover, // Adjust the fit of the image within the circle
-                    // ),
                   ),
                 ),
-                Container(
-                  //  decoration: BoxDecoration(border: Border.all(color: Colors.red)),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                          margin: const EdgeInsets.only(left: 0),
-                          // decoration: BoxDecoration(border: Border.all(color: Colors.red)),
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            widget.post.category == 'confession' &&
-                                    widget.post.anonymous! &&
-                                    !widget.userToPost.myPost()
-                                ? 'Anonymous Gucian'
-                                : widget.post.category == 'confession' &&
-                                        widget.post.anonymous!
-                                    ? 'Me Anonymously'
-                                    : widget.owner.handle,
-                            style: const TextStyle(),
-                            textAlign: TextAlign.end,
-                            textDirection: TextDirection.ltr,
-                          )),
-                      Text(getTime(widget.post.createdAt))
-                    ],
-                  ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          widget.post.category == 'confession' &&
+                                  widget.post.anonymous! &&
+                                  !widget.userToPost.myPost()
+                              ? 'Anonymous Gucian'
+                              : widget.post.category == 'confession' &&
+                                      widget.post.anonymous!
+                                  ? 'Me Anonymously'
+                                  : widget.owner.handle,
+                          textAlign: TextAlign.end,
+                          textDirection: TextDirection.ltr,
+                        )),
+                    Text(getTime(widget.post.createdAt))
+                  ],
                 ),
                 const Spacer(),
                 (widget.userToPost.myPost())
                     ? PopupMenuButton<String>(
                         onSelected: (String result) {
-                          print('Selected: $result');
                           if (result == 'Delete') {
                             showDialog(
                               context: context,
@@ -174,7 +111,7 @@ class _ReadPostCardState extends State<ReadPostCard> {
                                     ),
                                     TextButton(
                                       onPressed: () {
-                                        widget.func(widget.post.id);
+                                        widget.deletePostFunc(widget.post.id);
                                         Navigator.of(context)
                                             .pop(); // Close the dialog
                                       },
@@ -204,7 +141,6 @@ class _ReadPostCardState extends State<ReadPostCard> {
                       )
                     : PopupMenuButton<String>(
                         onSelected: (String result) {
-                          print('Selected: $result');
                           widget.userToPost.reportedPost()
                               ? widget.post.reporters.removeWhere((element) =>
                                   element == widget.userToPost.myId)
@@ -236,7 +172,7 @@ class _ReadPostCardState extends State<ReadPostCard> {
                 Container(
                     margin: const EdgeInsets.fromLTRB(15, 10, 15, 0),
                     child: FutureBuilder(
-                      future: getImageURL(widget.post.file ?? ''),
+                      future: getImageURL(widget.post.file!),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
@@ -246,8 +182,6 @@ class _ReadPostCardState extends State<ReadPostCard> {
                         } else if (!snapshot.hasData || snapshot.data == null) {
                           return const Text('No Image');
                         } else {
-                          print(snapshot.data);
-                          print('/*/*/*/*/*/*/*/*/*/*');
                           return CachedNetworkImage(
                             imageUrl: snapshot.data.toString(),
                             placeholder: (context, url) =>
@@ -257,26 +191,7 @@ class _ReadPostCardState extends State<ReadPostCard> {
                           );
                         }
                       },
-                    )
-
-                    // FutureBuilder(
-                    //     future: getImageURL(widget.post.file??''), // Fetch the image URL
-                    //     builder: (context, snapshot) {
-                    //       if (snapshot.connectionState ==
-                    //           ConnectionState.waiting) {
-                    //         return CircularProgressIndicator(); // Display a loading indicator while fetching the image
-                    //       } else if (snapshot.hasError) {
-                    //         return Text('Error: ${snapshot.error}');
-                    //       } else if (!snapshot.hasData || snapshot.data == null) {
-                    //         return Text('No Image');
-                    //       } else {
-                    //         print(snapshot.data);
-                    //         return Image.network(snapshot.data.toString()); // Display the image using the retrieved URL
-                    //       }
-                    //     },
-                    //   ),
-
-                    ),
+                    )),
               SizedBox(
                 width: double.infinity, // To take the full width of the card
                 child: Divider(
@@ -284,44 +199,40 @@ class _ReadPostCardState extends State<ReadPostCard> {
                   thickness: 1, // Thickness of the line
                 ),
               ),
-              Container(
-                child: Row(
-                  children: [
-                    voteComponent(
-                      userToPost: widget.userToPost,
-                      post: widget.post,
+              Row(
+                children: [
+                  voteComponent(
+                    userToPost: widget.userToPost,
+                    post: widget.post,
+                  ),
+                  const Spacer(),
+                  InkWell(
+                    onTap: () {
+                      showModalBottomSheet(
+                        isScrollControlled: true,
+                        context: context,
+                        builder: (BuildContext context) {
+                          return Padding(
+                              padding: EdgeInsets.only(
+                                  bottom:
+                                      MediaQuery.of(context).viewInsets.bottom),
+                              child: commentsComponent(
+                                post: widget.post,
+                              ));
+                        },
+                      );
+                    },
+                    child: Row(
+                      children: [
+                        Icon(Icons.chat_outlined, color: AppColors.darkGrey),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        const Text("Comment")
+                      ],
                     ),
-                    const Spacer(),
-                    InkWell(
-                      onTap: () {
-                        showModalBottomSheet(
-                          isScrollControlled: true,
-                          context: context,
-                          builder: (BuildContext context) {
-                            return Padding(
-                                padding: EdgeInsets.only(
-                                    bottom: MediaQuery.of(context)
-                                        .viewInsets
-                                        .bottom),
-                                // Set your preferred height for the bottom sheet
-                                child: commentsComponent(
-                                  post: widget.post,
-                                ));
-                          },
-                        );
-                      },
-                      child: Row(
-                        children: [
-                          Icon(Icons.chat_outlined, color: AppColors.darkGrey),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          const Text("Comment")
-                        ],
-                      ),
-                    )
-                  ],
-                ),
+                  )
+                ],
               )
             ],
           ),
@@ -340,22 +251,6 @@ class voteComponent extends StatefulWidget {
 }
 
 class _voteComponentState extends State<voteComponent> {
-  Future<void> updateVoting(
-      String postId, dynamic upVoters, dynamic downVoters) async {
-    try {
-      DocumentReference postRef =
-          FirebaseFirestore.instance.collection('posts').doc(postId);
-      await postRef.update({
-        'upVoters': upVoters,
-        'downVoters': downVoters,
-      });
-
-      print('Voting updated successfully!');
-    } catch (e) {
-      print('Error updating post attribute: $e');
-    }
-  }
-
   Future<void> vote(int v) async {
     if (v > 0) {
       //upvote
@@ -418,7 +313,7 @@ class _voteComponentState extends State<voteComponent> {
 
 class commentsComponent extends StatefulWidget {
   Post post;
-  
+
   commentsComponent({
     super.key,
     required this.post,
@@ -432,19 +327,12 @@ class _commentsComponentState extends State<commentsComponent> {
   var comments = [];
   bool loading = true;
   var commentContentCtrl = TextEditingController();
-  Future<void> getComments() async {
-    final firestore = FirebaseFirestore.instance;
-    final List<Comment> fetchedComments = [];
-    final List<DocumentSnapshot<Map<String, dynamic>>> snapshots =
-        await Future.wait(widget.post.commentIds.map(
-      (id) => firestore.collection('comments').doc(id).get(),
-    ));
+  var myHandle = '';
+  var myImgUrl = '';
 
-    for (var snapshot in snapshots) {
-      if (snapshot.exists) {
-        fetchedComments.add(Comment.fromJson(snapshot.data()!, snapshot.id));
-      }
-    }
+  Future<void> getComments() async {
+    final List<Comment> fetchedComments =
+        await fetchComments(widget.post.commentIds);
     setState(() {
       comments = fetchedComments;
       loading = false;
@@ -454,45 +342,38 @@ class _commentsComponentState extends State<commentsComponent> {
   Future<void> deleteComment(String idToDelete) async {
     comments.removeWhere((element) => element.id == idToDelete);
     widget.post.commentIds.removeWhere((element) => element == idToDelete);
-    try {
-      FirebaseFirestore firestore = FirebaseFirestore.instance;
-      await firestore.collection('comments').doc(idToDelete).delete();
-      await firestore
-          .collection('posts')
-          .doc(widget.post.id)
-          .update({'commentIds': widget.post.commentIds});
-      print('comment deleted successfully.');
-    } catch (e) {
-      print('Error deleting post: $e');
-    }
+    deleteCommentInDB(idToDelete, widget.post.id!, widget.post.commentIds);
     setState(() {});
   }
-var myHandle='';
-var myImgUrl='';
+
   @override
   void initState() {
-    UserInfoService.getUserAttribute('handle').then((value) => myHandle=value);
-    UserInfoService.getUserAttribute('photoUrl').then((value) => myImgUrl=value);
+    getUserAttribute('handle').then((value) => myHandle = value);
+    getUserAttribute('photoUrl').then((value) => myImgUrl = value);
     getComments();
     super.initState();
   }
 
-  Future<void> createComment(String content)async{
-    commentContentCtrl.text='';
-   var authHandle= await UserInfoService.getUserAttribute('handle'); 
-   var authImgUrl= await UserInfoService.getUserAttribute('photoUrl'); 
-   
-    Comment newComment=Comment(content: content, authorHandle: authHandle,authorImgUrl: authImgUrl!=''?authImgUrl:null, createdAt: DateTime.now());
-    FirebaseFirestore.instance.collection('comments').add(newComment.toJson()).then(
-      (value){
-        widget.post.commentIds.add(value.id);
-        comments.add(newComment);
-        FirebaseFirestore.instance.collection('posts').doc(widget.post.id).update({'commentIds':widget.post.commentIds});
-        setState(() {
-          
-        });
-      }
-    ).catchError((err){
+  Future<void> createComment(String content) async {
+    commentContentCtrl.text = '';
+    var authHandle = await getUserAttribute('handle');
+    var authImgUrl = await getUserAttribute('photoUrl');
+
+    var newComment = Comment(
+        content: content,
+        authorHandle: authHandle,
+        authorImgUrl: authImgUrl != '' ? authImgUrl : null,
+        createdAt: DateTime.now());
+    DatabaseReferences.comments
+        .add(newComment.toJson())
+        .then((value) {
+      widget.post.commentIds.add(value.id);
+      comments.add(newComment);
+      DatabaseReferences.posts
+          .doc(widget.post.id)
+          .update({'commentIds': widget.post.commentIds});
+      setState(() {});
+    }).catchError((err) {
       print(err);
     });
   }
@@ -501,137 +382,150 @@ var myImgUrl='';
   Widget build(BuildContext context) {
     return loading
         ? const Center(
-            child: CircularProgressIndicator(),
             heightFactor: 10.0,
+            child: CircularProgressIndicator(),
           )
         : Column(
             mainAxisAlignment: MainAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              Container(
+              SizedBox(
                 height: 300,
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: widget.post.commentIds.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return Container(
-                        margin: const EdgeInsets.only(top: 5, bottom: 10),
-                        child: ListTile(
-                          contentPadding:
-                              const EdgeInsets.symmetric(horizontal: 0),
-                          leading: Container(
-                            margin: EdgeInsets.only(top: 5),
-                            child: ClipOval(
-                                child: UserImg(
-                              anonymous: widget.post.category == 'confession' &&
-                                  widget.post.anonymous!,
-                              path: comments[index].authorImgUrl,
-                            )),
-                          ),
-                          title: Container(
-                              padding: const EdgeInsets.all(5),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15),
-                                color: AppColors.lightGrey,
-                              ),
-                              margin: const EdgeInsets.only(top: 10, right: 10),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Container(
-                                          margin: EdgeInsets.only(bottom: 5),
-                                          child: Text(
-                                            comments[index].authorHandle,
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          )),
-                                      Spacer(),
-                                      Text(_ReadPostCardState.getTime(
-                                          comments[index].createdAt)),
-                                          
-                                          if(comments[index].authorHandle==myHandle)
-                                      PopupMenuButton<String>(
-                                        onSelected: (String result) {
-                                          print('Selected: $result');
-                                          if (result == 'Delete') {
-                                            showDialog(
-                                              context: context,
-                                              builder: (BuildContext context) {
-                                                return AlertDialog(
-                                                  title: const Text(
-                                                      'Delete Comment'),
-                                                  content: const Text(
-                                                      'Are you sure you want to delete this comment?'),
-                                                  actions: <Widget>[
-                                                    TextButton(
-                                                      onPressed: () {
-                                                        Navigator.of(context)
-                                                            .pop(); // Close the dialog
+                child: widget.post.commentIds.isEmpty
+                    ?  Center(
+                        child: Text('No Comments for This ${widget.post.category} Yet'),
+                      )
+                    : ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: widget.post.commentIds.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Container(
+                              margin: const EdgeInsets.only(top: 5, bottom: 10),
+                              child: ListTile(
+                                contentPadding:
+                                    const EdgeInsets.symmetric(horizontal: 0),
+                                leading: Container(
+                                  margin: const EdgeInsets.only(top: 5),
+                                  child: ClipOval(
+                                      child: UserImg(
+                                    anonymous:
+                                        widget.post.category == 'confession' &&
+                                            widget.post.anonymous!,
+                                    path: comments[index].authorImgUrl,
+                                  )),
+                                ),
+                                title: Container(
+                                    padding: const EdgeInsets.all(5),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(15),
+                                      color: AppColors.lightGrey,
+                                    ),
+                                    margin: const EdgeInsets.only(
+                                        top: 10, right: 10),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Container(
+                                                margin: const EdgeInsets.only(
+                                                    bottom: 5),
+                                                child: Text(
+                                                  comments[index].authorHandle,
+                                                  style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                )),
+                                            Spacer(),
+                                            Text(getTime(
+                                                comments[index].createdAt)),
+                                            if (comments[index].authorHandle ==
+                                                myHandle)
+                                              PopupMenuButton<String>(
+                                                onSelected: (String result) {
+                                                  print('Selected: $result');
+                                                  if (result == 'Delete') {
+                                                    showDialog(
+                                                      context: context,
+                                                      builder: (BuildContext
+                                                          context) {
+                                                        return AlertDialog(
+                                                          title: const Text(
+                                                              'Delete Comment'),
+                                                          content: const Text(
+                                                              'Are you sure you want to delete this comment?'),
+                                                          actions: <Widget>[
+                                                            TextButton(
+                                                              onPressed: () {
+                                                                Navigator.of(
+                                                                        context)
+                                                                    .pop(); // Close the dialog
+                                                              },
+                                                              child: const Text(
+                                                                  'Cancel'),
+                                                            ),
+                                                            TextButton(
+                                                              onPressed: () {
+                                                                // widget.deletePostFunc(widget.post.id);
+                                                                deleteComment(widget
+                                                                        .post
+                                                                        .commentIds[
+                                                                    index]);
+                                                                Navigator.of(
+                                                                        context)
+                                                                    .pop(); // Close the dialog
+                                                              },
+                                                              child: const Text(
+                                                                  'Delete'),
+                                                            ),
+                                                          ],
+                                                        );
                                                       },
-                                                      child:
-                                                          const Text('Cancel'),
-                                                    ),
-                                                    TextButton(
-                                                      onPressed: () {
-                                                        // widget.func(widget.post.id);
-                                                        deleteComment(widget
-                                                            .post
-                                                            .commentIds[index]);
-                                                        Navigator.of(context)
-                                                            .pop(); // Close the dialog
-                                                      },
-                                                      child:
-                                                          const Text('Delete'),
-                                                    ),
-                                                  ],
-                                                );
-                                              },
-                                            );
-                                          }
-                                        },
-                                        itemBuilder: (BuildContext context) =>
-                                            <PopupMenuEntry<String>>[
-                                          const PopupMenuItem<String>(
-                                            value: 'Delete',
-                                            child: Text('Delete comment'),
-                                          ),
-                                        ],
-                                      )
-                                    ],
-                                  ),
-                                  Text(comments[index].content),
-                                ],
-                              )),
-                        ));
-                  },
-                ),
+                                                    );
+                                                  }
+                                                },
+                                                itemBuilder: (BuildContext
+                                                        context) =>
+                                                    <PopupMenuEntry<String>>[
+                                                  const PopupMenuItem<String>(
+                                                    value: 'Delete',
+                                                    child:
+                                                        Text('Delete comment'),
+                                                  ),
+                                                ],
+                                              )
+                                          ],
+                                        ),
+                                        Text(comments[index].content),
+                                      ],
+                                    )),
+                              ));
+                        },
+                      ),
               ),
               Container(
                 padding: EdgeInsets.only(left: 10, right: 10),
                 child: TextField(
                   autofocus: true,
                   controller: commentContentCtrl,
-                  
                   decoration: InputDecoration(
-                    
-                    suffixIcon: IconButton(icon: Icon(Icons.send),onPressed: (){
-                      createComment(commentContentCtrl.text);
-                    },),
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.send),
+                      onPressed: () {
+                        createComment(commentContentCtrl.text);
+                      },
+                    ),
                     hintText: 'What do you think?',
-                    
                     border: OutlineInputBorder(
                       // Border configuration
                       borderRadius:
                           BorderRadius.circular(8.0), // Set border radius
-                      borderSide: BorderSide(
+                      borderSide: const BorderSide(
                           color: Colors.grey,
                           width: 0.8), // Set border color and width
                     ),
-                    
                   ),
-                  
                 ),
               ),
               // Add your comment widgets here

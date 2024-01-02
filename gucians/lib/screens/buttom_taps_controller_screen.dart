@@ -28,7 +28,7 @@ class _ButtomTabsControllerScreenState
     _messaging.requestPermission();
     _messaging.setToken();
     _notificationService.initInfo();
-    UserInfoService.getUserAttribute('type').then((value) {
+    getUserAttribute('type').then((value) {
       print(value);
       isClub = (value == 'club');
     }).catchError((err) {

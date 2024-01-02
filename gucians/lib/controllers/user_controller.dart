@@ -12,8 +12,7 @@ class UserController {
   final UserWrites _userWrites = UserWrites();
   final MessagingService _messaging = MessagingService();
 
-  Future createUser(
-      String? uid, String name, String email, String handle) async {
+  Future createUser(String? uid, String name, String email, String handle) async {
     final docUser = DatabaseReferences.users.doc(uid);
 
     String? token = await _messaging.getToken();

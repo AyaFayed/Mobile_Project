@@ -1,9 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:gucians/models/user_model.dart';
 
-class UserInfoService {
-  static String getCurrentUserId() {
+   String getCurrentUserId() {
     FirebaseAuth auth = FirebaseAuth.instance;
     User? user = auth.currentUser;
     if (user != null) {
@@ -13,7 +11,7 @@ class UserInfoService {
     return 'OZ0B6Owm05aVaYjEBynWHqJRYkf1';
   }
 
-  static Future<String> getUserAttribute(String att) async {
+   Future<String> getUserAttribute(String att) async {
     String id = getCurrentUserId();
     final firestore = FirebaseFirestore.instance;
     DocumentSnapshot<Map<String, dynamic>> snapshot =
@@ -25,4 +23,4 @@ class UserInfoService {
       return att;
     }
   }
-}
+

@@ -20,7 +20,7 @@ Future<String> addPost(String content, bool anonymous, String category,
   if (image != null) {
     imageUrl = await getImageUrl(image);
   }
-  String authorId = UserInfoService.getCurrentUserId();
+  String authorId = getCurrentUserId();
   // check to hash the id before adding the author_id
   if (anonymous) {
     authorId = Hashing.hash(authorId);
